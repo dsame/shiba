@@ -3,6 +3,7 @@ package org.codeforamerica.shiba;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.HttpClient;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.ssl.SSLContextBuilder;
@@ -35,6 +36,7 @@ public class MnitEsbWebServiceTemplateConfiguration {
         HttpClient httpClient = HttpClients.custom()
                 .addInterceptorFirst(new HttpComponentsMessageSender.RemoveSoapHeadersInterceptor())
                 .setSSLContext(sslContextBuilder.build())
+//                .setSSLHostnameVerifier(new NoopHostnameVerifier())
                 .setDefaultHeaders(List.of(new BasicHeader(HttpHeaders.AUTHORIZATION, "Basic " + new String(encodedAuth))))
                 .build();
         return webServiceTemplateBuilder

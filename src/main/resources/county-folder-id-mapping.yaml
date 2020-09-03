@@ -1,6 +1,7 @@
 county-to-folder-id:
   HENNEPIN:
-    folderId: 5195b061-9bdc-4d31-9840-90a99902d329
+#    folderId: 5195b061-9bdc-4d31-9840-90a99902d329 # STST
+    folderId: 45ed1eea-d045-48fe-9970-383e1b889ec5 # ATST
     dhsProviderId: A000027200
   OTHER:
     folderId: 5195b061-9bdc-4d31-9840-90a99902d329

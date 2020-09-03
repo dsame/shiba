@@ -50,7 +50,7 @@ public class SSLConfigurationTest {
                 .setSSLContext(sslContextBuilder
                         .loadTrustMaterial(new TrustSelfSignedStrategy())
                         .build())
-                .setSSLHostnameVerifier(new NoopHostnameVerifier())
+//                .setSSLHostnameVerifier(new NoopHostnameVerifier())
                 .build();
         WireMockConfiguration options = WireMockConfiguration.wireMockConfig()
                 .dynamicPort()

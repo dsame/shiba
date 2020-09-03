@@ -33,7 +33,7 @@ public class ApplicationSubmittedListener {
     @EventListener
     public void handleApplicationSubmittedEvent(ApplicationSubmittedEvent applicationSubmittedEvent) {
         //TODO: put this back when MN-IT integration is done
-//        this.mnitDocumentConsumer.process(this.applicationRepository.find(applicationSubmittedEvent.getApplicationId()));
+        this.mnitDocumentConsumer.process(this.applicationRepository.find(applicationSubmittedEvent.getApplicationId()));
     }
 
     @Async

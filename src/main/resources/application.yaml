@@ -9,7 +9,8 @@ client:
   keystore: src/main/resources/shiba-keystore.jks
 
 mnit-esb:
-  url: https://test-svcs.dhs.mn.gov/WebServices/Alfresco/CreateDocument
+#  url: https://test-svcs.dhs.mn.gov/WebServices/Alfresco/CreateDocument # STST
+  url: https://uat-svcs.dhs.mn.gov/WebServices/Alfresco/CreateDocument # ATST
   jaxb-context-path: org.codeforamerica.shiba.esbwsdl
 
 sentry:
@@ -19,3 +20,7 @@ sender-email: help@mnbenefits.org
 mail-gun:
   url: "https://api.mailgun.net/v3/mail.mnbenefits.org/messages"
   api-key: ${MAILGUN_API_KEY}
+
+logging:
+  level:
+    root: debug
