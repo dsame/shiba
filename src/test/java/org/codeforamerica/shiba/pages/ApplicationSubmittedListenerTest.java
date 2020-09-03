@@ -7,6 +7,7 @@ import org.codeforamerica.shiba.output.applicationinputsmappers.ApplicationInput
 import org.codeforamerica.shiba.output.caf.ExpeditedEligibility;
 import org.codeforamerica.shiba.output.caf.ExpeditedEligibilityDecider;
 import org.codeforamerica.shiba.output.pdf.PdfGenerator;
+import org.codeforamerica.shiba.output.MnitDocumentConsumer;
 import org.codeforamerica.shiba.pages.data.ApplicationData;
 import org.codeforamerica.shiba.pages.data.InputData;
 import org.codeforamerica.shiba.pages.data.PageData;
@@ -14,9 +15,12 @@ import org.codeforamerica.shiba.pages.data.PagesData;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 
+import static org.codeforamerica.shiba.County.HENNEPIN;
 import static org.mockito.Mockito.*;
 
 class ApplicationSubmittedListenerTest {
@@ -69,7 +73,7 @@ class ApplicationSubmittedListenerTest {
         ApplicationFile applicationFile = new ApplicationFile("someContent".getBytes(), "someFileName");
         when(pdfGenerator.generate(applicationInputs, appIdFromDb)).thenReturn(applicationFile);
 
-        applicationSubmittedListener.sendEmailForApplication(event);
+        applicationSubmittedListener.sendConfirmationEmail(event);
 
         verify(emailClient).sendConfirmationEmail(email, appIdFromDb, ExpeditedEligibility.ELIGIBLE, applicationFile);
     }
@@ -84,11 +88,40 @@ class ApplicationSubmittedListenerTest {
         when(applicationRepository.find(any())).thenReturn(new Application("", ZonedDateTime.now(), applicationData, null));
         ApplicationSubmittedEvent event = new ApplicationSubmittedEvent("appId");
 
-        applicationSubmittedListener.sendEmailForApplication(event);
+        applicationSubmittedListener.sendConfirmationEmail(event);
 
         verifyNoInteractions(applicationInputsMappers);
         verifyNoInteractions(pdfGenerator);
         verifyNoInteractions(expeditedEligibilityDecider);
         verifyNoInteractions(emailClient);
+    }
+
+    @Test
+    void shouldSendEmailToCaseWorkers() {
+        String applicationId = "applicationId";
+        String recipient = "some@email.address";
+        String clientFirstName = "Steve";
+        String clientLastName = "Rogers";
+        File attachment;
+        ApplicationSubmittedEvent event = new ApplicationSubmittedEvent(applicationId);
+        ApplicationData applicationData = new ApplicationData();
+        PagesData pagesData = new PagesData();
+        PageData pageData = new PageData();
+        pageData.put("firstName", InputData.builder().value(List.of(clientFirstName)).build());
+        pageData.put("lastName", InputData.builder().value(List.of(clientLastName)).build());
+        pagesData.put("personalInfo", pageData);
+        applicationData.setPagesData(pagesData);
+        when(applicationRepository.find(applicationId)).thenReturn(new Application(
+                "", ZonedDateTime.now(), applicationData, HENNEPIN
+        ));
+        //when(countyEmailMap.get(HENNEPIN)).thenReturn(recipient);
+
+        applicationSubmittedListener.sendCaseWorkerEmail(event);
+
+        verify(emailClient).sendCaseWorkerEmail(
+                recipient,
+                String.join(" ", clientFirstName, clientLastName),
+                null
+        );
     }
 }

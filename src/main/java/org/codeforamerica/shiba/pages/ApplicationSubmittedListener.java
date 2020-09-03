@@ -51,7 +51,7 @@ public class ApplicationSubmittedListener {
 
     @Async
     @EventListener
-    public void sendEmailForApplication(ApplicationSubmittedEvent event) {
+    public void sendConfirmationEmail(ApplicationSubmittedEvent event) {
         Application application = applicationRepository.find(event.getApplicationId());
         PagesData pagesData = application.getApplicationData().getPagesData();
         Optional.ofNullable(pagesData
@@ -64,5 +64,18 @@ public class ApplicationSubmittedListener {
                     ExpeditedEligibility expeditedEligibility = expeditedEligibilityDecider.decide(pagesData);
                     emailClient.sendConfirmationEmail(input.getValue().get(0), applicationId, expeditedEligibility, pdf);
                 });
+    }
+
+    @Async
+    @EventListener
+    public void sendCaseWorkerEmail(ApplicationSubmittedEvent event) {
+        Application application = applicationRepository.find(event.getApplicationId());
+        PageData personalInfo = application.getApplicationData().getInputDataMap("personalInfo");
+
+        emailClient.sendCaseWorkerEmail(
+                countyEmailMap.get(application.getCounty()),
+                String.join(" ", personalInfo.get("firstName").getValue().get(0), personalInfo.get("lastName").getValue().get(0)),
+                null//TODO: figure out how to convert byte[] to File
+        );
     }
 }
