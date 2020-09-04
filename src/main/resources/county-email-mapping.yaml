@@ -20,6 +20,6 @@ production:
 ---
 
 other:
-  HENNEPIN: somewhere@idontknow.something
-  OTHER: somewhere@idontknow.something
-  OLMSTED: somewhere@idontknow.something
+  HENNEPIN: help+dev@mnbenefits.org
+  OTHER: help+dev@mnbenefits.org
+  OLMSTED: help+dev@mnbenefits.org

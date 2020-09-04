@@ -71,7 +71,7 @@ class MailGunEmailClientTest {
         String emailContent = "content";
         ExpeditedEligibility expeditedEligibility = ELIGIBLE;
         String confirmationId = "someConfirmationId";
-        when(emailContentCreator.createHTML(confirmationId, expeditedEligibility)).thenReturn(emailContent);
+        when(emailContentCreator.createClientHTML(confirmationId, expeditedEligibility)).thenReturn(emailContent);
 
         wireMockServer.stubFor(post(anyUrl())
                 .willReturn(aResponse().withStatus(200)));

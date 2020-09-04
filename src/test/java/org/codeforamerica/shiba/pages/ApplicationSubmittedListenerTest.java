@@ -7,7 +7,6 @@ import org.codeforamerica.shiba.output.applicationinputsmappers.ApplicationInput
 import org.codeforamerica.shiba.output.caf.ExpeditedEligibility;
 import org.codeforamerica.shiba.output.caf.ExpeditedEligibilityDecider;
 import org.codeforamerica.shiba.output.pdf.PdfGenerator;
-import org.codeforamerica.shiba.output.MnitDocumentConsumer;
 import org.codeforamerica.shiba.pages.data.ApplicationData;
 import org.codeforamerica.shiba.pages.data.InputData;
 import org.codeforamerica.shiba.pages.data.PageData;
@@ -15,10 +14,8 @@ import org.codeforamerica.shiba.pages.data.PagesData;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Map;
 
 import static org.codeforamerica.shiba.County.HENNEPIN;
 import static org.mockito.Mockito.*;
@@ -99,29 +96,30 @@ class ApplicationSubmittedListenerTest {
     @Test
     void shouldSendEmailToCaseWorkers() {
         String applicationId = "applicationId";
-        String recipient = "some@email.address";
-        String clientFirstName = "Steve";
-        String clientLastName = "Rogers";
-        File attachment;
-        ApplicationSubmittedEvent event = new ApplicationSubmittedEvent(applicationId);
         ApplicationData applicationData = new ApplicationData();
         PagesData pagesData = new PagesData();
-        PageData pageData = new PageData();
-        pageData.put("firstName", InputData.builder().value(List.of(clientFirstName)).build());
-        pageData.put("lastName", InputData.builder().value(List.of(clientLastName)).build());
-        pagesData.put("personalInfo", pageData);
+        PageData contactInfoPage = new PageData();
+        String email = "abc@123.com";
+        contactInfoPage.put("email", InputData.builder().value(List.of(email)).build());
+        pagesData.put("contactInfo", contactInfoPage);
+        PageData personalInfoPage = new PageData();
+        personalInfoPage.put("firstName", InputData.builder().value(List.of("Testy")).build());
+        personalInfoPage.put("lastName", InputData.builder().value(List.of("McTesterson")).build());
+        pagesData.put("personalInfo", personalInfoPage);
         applicationData.setPagesData(pagesData);
-        when(applicationRepository.find(applicationId)).thenReturn(new Application(
-                "", ZonedDateTime.now(), applicationData, HENNEPIN
-        ));
-        //when(countyEmailMap.get(HENNEPIN)).thenReturn(recipient);
+        String appIdFromDb = "id";
+        String fullName = "Testy McTesterson";
+        Application application = new Application(appIdFromDb, ZonedDateTime.now(), applicationData, HENNEPIN);
+        when(applicationRepository.find(applicationId)).thenReturn(application);
+        ApplicationSubmittedEvent event = new ApplicationSubmittedEvent(applicationId);
+        when(expeditedEligibilityDecider.decide(pagesData)).thenReturn(ExpeditedEligibility.ELIGIBLE);
+        List<ApplicationInput> applicationInputs = List.of(new ApplicationInput("someGroupName", "someName", List.of("someValue"), ApplicationInputType.SINGLE_VALUE));
+        when(applicationInputsMappers.map(application, Recipient.CASEWORKER)).thenReturn(applicationInputs);
+        ApplicationFile applicationFile = new ApplicationFile("someContent".getBytes(), "someFileName");
+        when(pdfGenerator.generate(applicationInputs, appIdFromDb)).thenReturn(applicationFile);
 
         applicationSubmittedListener.sendCaseWorkerEmail(event);
 
-        verify(emailClient).sendCaseWorkerEmail(
-                recipient,
-                String.join(" ", clientFirstName, clientLastName),
-                null
-        );
+        verify(emailClient).sendCaseWorkerEmail(email, fullName, appIdFromDb, ExpeditedEligibility.ELIGIBLE, applicationFile);
     }
 }

@@ -48,7 +48,26 @@ public class MailGunEmailClient implements EmailClient {
         form.put("from", List.of(senderEmail));
         form.put("to", List.of(recipientEmail));
         form.put("subject", List.of("We received your application"));
-        form.put("html", List.of(emailContentCreator.createHTML(confirmationId, expeditedEligibility)));
+        form.put("html", List.of(emailContentCreator.createClientHTML(confirmationId, expeditedEligibility)));
+        form.put("attachment", List.of(asFileSystemResource(applicationFile)));
+
+        HttpHeaders requestHeaders = new HttpHeaders();
+        requestHeaders.setBasicAuth("api", mailGunApiKey);
+
+        restTemplate.postForLocation(mailGunUrl, new HttpEntity<>(form, requestHeaders));
+    }
+
+    @Override
+    public void sendCaseWorkerEmail(String recipientEmail,
+                                    String recipientName,
+                                    String confirmationId,
+                                    ExpeditedEligibility expeditedEligibility,
+                                    ApplicationFile applicationFile) {
+        MultiValueMap<String, Object> form = new LinkedMultiValueMap<>();
+        form.put("from", List.of(senderEmail));
+        form.put("to", List.of(recipientEmail));
+        form.put("subject", List.of("MNBenefits.org Application for " + recipientName));
+        form.put("html", List.of(emailContentCreator.createCaseworkerHTML()));
         form.put("attachment", List.of(asFileSystemResource(applicationFile)));
 
         HttpHeaders requestHeaders = new HttpHeaders();
@@ -67,11 +86,6 @@ public class MailGunEmailClient implements EmailClient {
             throw new RuntimeException(e);
         }
         return new FileSystemResource(file);
-    }
-
-    @Override
-    public void sendCaseWorkerEmail(String recipient, String clientName, File attachment) {
-        //TODO
     }
 
 }

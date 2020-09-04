@@ -3,8 +3,6 @@ package org.codeforamerica.shiba.pages;
 import org.codeforamerica.shiba.output.ApplicationFile;
 import org.codeforamerica.shiba.output.caf.ExpeditedEligibility;
 
-import java.io.File;
-
 public interface EmailClient {
 
     void sendConfirmationEmail(String recipientEmail,
@@ -12,6 +10,9 @@ public interface EmailClient {
                                ExpeditedEligibility expeditedEligibility,
                                ApplicationFile applicationFile);
 
-    void sendCaseWorkerEmail(String recipient, String clientName, File attachment);
-
+    void sendCaseWorkerEmail(String recipientEmail,
+                             String recipientName,
+                             String confirmationId,
+                             ExpeditedEligibility expeditedEligibility,
+                             ApplicationFile applicationFile);
 }
