@@ -5,7 +5,6 @@ import org.codeforamerica.shiba.output.caf.ExpeditedEligibility;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
@@ -19,7 +18,6 @@ import java.nio.file.Files;
 import java.util.List;
 
 @Component
-@ConditionalOnProperty(value = "SUBMIT_VIA_EMAIL", havingValue = "true")
 public class MailGunEmailClient implements EmailClient {
     private final RestTemplate restTemplate;
     private final String senderEmail;

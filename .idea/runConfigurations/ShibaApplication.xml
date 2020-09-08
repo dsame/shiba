@@ -15,9 +15,6 @@
     <option name="ALTERNATIVE_JRE_PATH" />
     <option name="UPDATE_ACTION_UPDATE_POLICY" value="UpdateTriggerFile" />
     <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateResources" />
-    <envs>
-      <env name="SUBMIT_VIA_EMAIL" value="true" />
-    </envs>
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

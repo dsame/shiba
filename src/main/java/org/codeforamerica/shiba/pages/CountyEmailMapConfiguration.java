@@ -22,7 +22,9 @@ public class CountyEmailMapConfiguration {
     @Bean
     @Profile("demo")
     @ConfigurationProperties(prefix = "demo")
-    CountyEmailMap demoMapping() { return new CountyEmailMap(); }
+    CountyEmailMap demoMapping() {
+        return new CountyEmailMap();
+    }
 
     @Bean
     @Profile("staging")
