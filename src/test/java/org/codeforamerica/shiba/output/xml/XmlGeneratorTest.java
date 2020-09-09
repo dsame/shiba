@@ -1,8 +1,10 @@
 package org.codeforamerica.shiba.output.xml;
 
+import org.codeforamerica.shiba.ApplicationRepository;
 import org.codeforamerica.shiba.output.ApplicationFile;
 import org.codeforamerica.shiba.output.ApplicationInput;
 import org.codeforamerica.shiba.output.ApplicationInputType;
+import org.codeforamerica.shiba.output.applicationinputsmappers.ApplicationInputsMappers;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -22,9 +24,15 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.codeforamerica.shiba.output.Recipient.CLIENT;
 import static org.hamcrest.Matchers.hasXPath;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class XmlGeneratorTest {
+    ApplicationInputsMappers mappers = mock(ApplicationInputsMappers.class);
+    ApplicationRepository applicationRepository = mock(ApplicationRepository.class);
 
     @ParameterizedTest
     @EnumSource(value = ApplicationInputType.class)
@@ -43,9 +51,17 @@ class XmlGeneratorTest {
                 pageName + "." + formInputName,
                 "SOME_TOKEN"
         );
-        XmlGenerator subject = new XmlGenerator(new ByteArrayResource(xml.getBytes()), xmlConfigMap, Map.of());
+        XmlGenerator subject = new XmlGenerator(
+                new ByteArrayResource(xml.getBytes()),
+                xmlConfigMap,
+                Map.of(),
+                applicationRepository,
+                mappers
+        );
 
-        ApplicationFile applicationFile = subject.generate(applicationInputs, "");
+        when(mappers.map(any(), any())).thenReturn(applicationInputs);
+
+        ApplicationFile applicationFile = subject.generate("someId", CLIENT);
 
         SimpleNamespaceContext namespaceContext = new SimpleNamespaceContext();
         namespaceContext.setBindings(Map.of("ns", "some-url"));
@@ -65,9 +81,15 @@ class XmlGeneratorTest {
 
         List<ApplicationInput> applicationInputs = List.of();
 
-        XmlGenerator subject = new XmlGenerator(new ByteArrayResource(xml.getBytes()), Map.of(), Map.of());
+        when(mappers.map(any(), any())).thenReturn(applicationInputs);
 
-        ApplicationFile applicationFile = subject.generate(applicationInputs, "");
+        XmlGenerator subject = new XmlGenerator(new ByteArrayResource(xml.getBytes()),
+                Map.of(),
+                Map.of(),
+                applicationRepository,
+                mappers);
+
+        ApplicationFile applicationFile = subject.generate("someId", CLIENT);
         Document document = byteArrayToDocument(applicationFile.getFileBytes());
         SimpleNamespaceContext namespaceContext = new SimpleNamespaceContext();
         namespaceContext.setBindings(Map.of("ns", "some-url"));
@@ -100,9 +122,15 @@ class XmlGeneratorTest {
                 pageName + "." + formInputName1, "SOME_TOKEN1",
                 pageName + "." + formInputName2, "SOME_TOKEN2"
         );
-        XmlGenerator subject = new XmlGenerator(new ByteArrayResource(xml.getBytes()), xmlConfigMap, Map.of());
+        XmlGenerator subject = new XmlGenerator(new ByteArrayResource(xml.getBytes()),
+                xmlConfigMap,
+                Map.of(),
+                applicationRepository,
+                mappers);
 
-        ApplicationFile applicationFile = subject.generate(applicationInputs, "");
+        when(mappers.map(any(), any())).thenReturn(applicationInputs);
+
+        ApplicationFile applicationFile = subject.generate("", null);
 
         SimpleNamespaceContext namespaceContext = new SimpleNamespaceContext();
         namespaceContext.setBindings(Map.of("ns", "some-url"));
@@ -137,9 +165,14 @@ class XmlGeneratorTest {
         List<ApplicationInput> applicationInputs = List.of(applicationInput1, applicationInput2);
 
         Map<String, String> xmlConfigMap = Map.of(pageName + "." + formInputName, "SOME_TOKEN");
-        XmlGenerator subject = new XmlGenerator(new ByteArrayResource(xml.getBytes()), xmlConfigMap, Map.of());
+        XmlGenerator subject = new XmlGenerator(new ByteArrayResource(xml.getBytes()),
+                xmlConfigMap,
+                Map.of(),
+                applicationRepository,
+                mappers);
+        when(mappers.map(any(), any())).thenReturn(applicationInputs);
 
-        ApplicationFile applicationFile = subject.generate(applicationInputs, "");
+        ApplicationFile applicationFile = subject.generate("", null);
 
         SimpleNamespaceContext namespaceContext = new SimpleNamespaceContext();
         namespaceContext.setBindings(Map.of("ns", "some-url"));
@@ -176,8 +209,13 @@ class XmlGeneratorTest {
         String xmlEnumName = "SOME_VALUE";
         Map<String, String> xmlEnum = Map.of(formInputValue, xmlEnumName);
 
-        XmlGenerator subject = new XmlGenerator(new ByteArrayResource(xml.getBytes()), xmlConfigMap, xmlEnum);
-        ApplicationFile applicationFile = subject.generate(applicationInputs, "");
+        XmlGenerator subject = new XmlGenerator(new ByteArrayResource(xml.getBytes()),
+                xmlConfigMap,
+                xmlEnum,
+                applicationRepository,
+                mappers);
+        when(mappers.map(any(), any())).thenReturn(applicationInputs);
+        ApplicationFile applicationFile = subject.generate("", null);
 
         Document document = byteArrayToDocument(applicationFile.getFileBytes());
 
@@ -207,8 +245,13 @@ class XmlGeneratorTest {
         String xmlEnumName = "SOME_VALUE";
         Map<String, String> xmlEnum = Map.of(formInputValue, xmlEnumName);
 
-        XmlGenerator subject = new XmlGenerator(new ByteArrayResource(xml.getBytes()), xmlConfigMap, xmlEnum);
-        ApplicationFile applicationFile = subject.generate(applicationInputs, "");
+        XmlGenerator subject = new XmlGenerator(new ByteArrayResource(xml.getBytes()),
+                xmlConfigMap,
+                xmlEnum,
+                applicationRepository,
+                mappers);
+        when(mappers.map(any(), any())).thenReturn(applicationInputs);
+        ApplicationFile applicationFile = subject.generate("", null);
 
         Document document = byteArrayToDocument(applicationFile.getFileBytes());
 
@@ -239,8 +282,13 @@ class XmlGeneratorTest {
         String xmlEnumName = "SOME_VALUE";
         Map<String, String> xmlEnum = Map.of(formInputValue, xmlEnumName);
 
-        XmlGenerator subject = new XmlGenerator(new ByteArrayResource(xml.getBytes()), xmlConfigMap, xmlEnum);
-        ApplicationFile applicationFile = subject.generate(applicationInputs, "");
+        XmlGenerator subject = new XmlGenerator(new ByteArrayResource(xml.getBytes()),
+                xmlConfigMap,
+                xmlEnum,
+                applicationRepository,
+                mappers);
+        when(mappers.map(any(), any())).thenReturn(applicationInputs);
+        ApplicationFile applicationFile = subject.generate("", null);
 
         Document document = byteArrayToDocument(applicationFile.getFileBytes());
 
@@ -271,8 +319,13 @@ class XmlGeneratorTest {
 
         Map<String, String> xmlEnum = Map.of();
 
-        XmlGenerator subject = new XmlGenerator(new ByteArrayResource(xml.getBytes()), xmlConfigMap, xmlEnum);
-        ApplicationFile applicationFile = subject.generate(applicationInputs, "");
+        XmlGenerator subject = new XmlGenerator(new ByteArrayResource(xml.getBytes()),
+                xmlConfigMap,
+                xmlEnum,
+                applicationRepository,
+                mappers);
+        when(mappers.map(any(), any())).thenReturn(applicationInputs);
+        ApplicationFile applicationFile = subject.generate("", null);
 
         Document document = byteArrayToDocument(applicationFile.getFileBytes());
 
@@ -305,8 +358,13 @@ class XmlGeneratorTest {
         String xmlEnumName = "SOME_VALUE";
         Map<String, String> xmlEnum = Map.of(formInputValue, xmlEnumName);
 
-        XmlGenerator subject = new XmlGenerator(new ByteArrayResource(xml.getBytes()), xmlConfigMap, xmlEnum);
-        ApplicationFile applicationFile = subject.generate(applicationInputs, "");
+        XmlGenerator subject = new XmlGenerator(new ByteArrayResource(xml.getBytes()),
+                xmlConfigMap,
+                xmlEnum,
+                applicationRepository,
+                mappers);
+        when(mappers.map(any(), any())).thenReturn(applicationInputs);
+        ApplicationFile applicationFile = subject.generate("", null);
 
         Document document = byteArrayToDocument(applicationFile.getFileBytes());
 
@@ -335,8 +393,13 @@ class XmlGeneratorTest {
 
         Map<String, String> xmlEnum = Map.of();
 
-        XmlGenerator subject = new XmlGenerator(new ByteArrayResource(xml.getBytes()), xmlConfigMap, xmlEnum);
-        ApplicationFile applicationFile = subject.generate(applicationInputs, "");
+        XmlGenerator subject = new XmlGenerator(new ByteArrayResource(xml.getBytes()),
+                xmlConfigMap,
+                xmlEnum,
+                applicationRepository,
+                mappers);
+        when(mappers.map(any(), any())).thenReturn(applicationInputs);
+        ApplicationFile applicationFile = subject.generate("", null);
 
         Document document = byteArrayToDocument(applicationFile.getFileBytes());
 
@@ -364,8 +427,13 @@ class XmlGeneratorTest {
                 pageName + "." + formInputName,
                 "SOME_TOKEN"
         );
-        FileGenerator subject = new XmlGenerator(new ByteArrayResource(xml.getBytes()), xmlConfigMap, Map.of());
-        ApplicationFile applicationFile = subject.generate(applicationInputs, "");
+        FileGenerator subject = new XmlGenerator(new ByteArrayResource(xml.getBytes()),
+                xmlConfigMap,
+                Map.of(),
+                applicationRepository,
+                mappers);
+        when(mappers.map(any(), any())).thenReturn(applicationInputs);
+        ApplicationFile applicationFile = subject.generate("", null);
         Document document = byteArrayToDocument(applicationFile.getFileBytes());
 
         SimpleNamespaceContext namespaceContext = new SimpleNamespaceContext();
@@ -380,14 +448,15 @@ class XmlGeneratorTest {
                 "    <ns:Child>{{SOME_TOKEN}}</ns:Child>\n" +
                 "</ns:Root>";
 
-        FileGenerator subject = new XmlGenerator(
-                new ByteArrayResource(xml.getBytes()),
+        FileGenerator subject = new XmlGenerator(new ByteArrayResource(xml.getBytes()),
                 Map.of(),
-                Map.of()
+                Map.of(),
+                applicationRepository,
+                mappers
         );
 
         String applicationId = "application-id";
-        ApplicationFile applicationFile = subject.generate(List.of(), applicationId);
+        ApplicationFile applicationFile = subject.generate(applicationId, null);
 
         assertThat(applicationFile.getFileName()).isEqualTo("cfa-" + applicationId + ".xml");
     }

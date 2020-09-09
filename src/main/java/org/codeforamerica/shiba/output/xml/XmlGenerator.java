@@ -1,7 +1,10 @@
 package org.codeforamerica.shiba.output.xml;
 
+import org.codeforamerica.shiba.ApplicationRepository;
 import org.codeforamerica.shiba.output.ApplicationFile;
 import org.codeforamerica.shiba.output.ApplicationInput;
+import org.codeforamerica.shiba.output.Recipient;
+import org.codeforamerica.shiba.output.applicationinputsmappers.ApplicationInputsMappers;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
@@ -21,20 +24,28 @@ public class XmlGenerator implements FileGenerator {
     private final Resource xmlConfiguration;
     private final Map<String, String> config;
     private final Map<String, String> enumMappings;
+    private final ApplicationRepository applicationRepository;
+    private final ApplicationInputsMappers mappers;
     private final BinaryOperator<String> UNUSED_IN_SEQUENTIAL_STREAM = (s1, s2) -> "";
     private final Function<String, String> tokenFormatter = (token) -> Pattern.quote(String.format("{{%s}}", token));
 
     public XmlGenerator(
             @Value("classpath:XmlConfiguration.xml") Resource xmlConfiguration,
             Map<String, String> xmlConfigMap,
-            Map<String, String> xmlEnum) {
+            Map<String, String> xmlEnum,
+            ApplicationRepository applicationRepository,
+            ApplicationInputsMappers mappers) {
         this.xmlConfiguration = xmlConfiguration;
         this.config = xmlConfigMap;
         this.enumMappings = xmlEnum;
+        this.applicationRepository = applicationRepository;
+        this.mappers = mappers;
     }
 
     @Override
-    public ApplicationFile generate(List<ApplicationInput> applicationInputs, String applicationId) {
+    public ApplicationFile generate(String applicationId, Recipient recipient) {
+        List<ApplicationInput> applicationInputs = mappers.map(applicationRepository.find(applicationId), recipient);
+
         try {
             String contentsAfterReplacement = applicationInputs.stream()
                     .filter(input -> !input.getValue().isEmpty())
