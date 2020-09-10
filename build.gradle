@@ -82,7 +82,8 @@ dependencies {
     implementation 'org.apache.httpcomponents:httpclient'
     implementation 'io.sentry:sentry-spring:1.7.30'
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    runtimeOnly 'org.flywaydb:flyway-core:6.4.4'
+    implementation 'com.google.crypto.tink:tink:1.4.0'
+    implementation 'org.flywaydb:flyway-core:6.4.4'
 
     implementation(files(genJaxb.classesDir).builtBy(genJaxb))
     jaxb "com.sun.xml.bind:jaxb-xjc:2.1.7"
