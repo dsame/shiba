@@ -1,6 +1,6 @@
 package db.migration;
 
-import org.codeforamerica.shiba.TinkEncryptor;
+import org.codeforamerica.shiba.StringEncryptor;
 import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -11,18 +11,14 @@ import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.List;
-import java.util.Map;
 
 public class V9__EncryptExistingData extends BaseJavaMigration {
     public void migrate(Context context) throws GeneralSecurityException, IOException {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(new SingleConnectionDataSource(context.getConnection(), true));
-        TinkEncryptor tinkEncryptor = new TinkEncryptor(System.getenv("ENCRYPTION_KEY"));
-        List<Map<String, Object>> records = jdbcTemplate.queryForList("SELECT id, data FROM applications");
-
-        SqlParameterSource[] sqlParameterSources = records.stream()
-                .map(record -> new MapSqlParameterSource("encryptedData", tinkEncryptor.encrypt((String) record.get("data")))
-                        .addValue("id", record.get("id")))
+        StringEncryptor stringEncryptor = new StringEncryptor(System.getenv("ENCRYPTION_KEY"));
+        SqlParameterSource[] sqlParameterSources = jdbcTemplate.query("SELECT id, data FROM applications", (rs, rowNum) ->
+                new MapSqlParameterSource("encryptedData", stringEncryptor.encrypt(rs.getString("data")))
+                        .addValue("id", rs.getString("id")))
                 .toArray(SqlParameterSource[]::new);
         NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
         namedParameterJdbcTemplate.batchUpdate(

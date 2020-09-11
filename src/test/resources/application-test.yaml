@@ -26,3 +26,4 @@ mail-gun:
   api-key: some-key
 
 submit-via-email: true
+encryption-key: "{\"primaryKeyId\": 1327436982,\"key\": [{\"keyData\": {\"typeUrl\": \"type.googleapis.com/google.crypto.tink.AesGcmKey\",\"keyMaterialType\": \"SYMMETRIC\",\"value\": \"GiBNbWUQwzU8lLaodZyKy/7+5om6KoxPLFc11dqM+N4L1Q==\"},\"outputPrefixType\": \"TINK\",\"keyId\": 1327436982,\"status\": \"ENABLED\"}]}"

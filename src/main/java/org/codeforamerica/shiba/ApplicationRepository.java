@@ -1,7 +1,5 @@
 package org.codeforamerica.shiba;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.codeforamerica.shiba.pages.data.ApplicationData;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -16,10 +14,10 @@ import java.util.Random;
 @Repository
 public class ApplicationRepository {
     private final JdbcTemplate jdbcTemplate;
-    private final Encryptor encryptor;
+    private final Encryptor<ApplicationData> encryptor;
 
     public ApplicationRepository(JdbcTemplate jdbcTemplate,
-                                 Encryptor encryptor) {
+                                 Encryptor<ApplicationData> encryptor) {
         this.jdbcTemplate = jdbcTemplate;
         this.encryptor = encryptor;
     }

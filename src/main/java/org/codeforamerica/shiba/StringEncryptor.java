@@ -11,10 +11,10 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 
 @Component
-public class TinkEncryptor {
+public class StringEncryptor implements Encryptor<String> {
     private final Aead aead;
 
-    public TinkEncryptor(@Value("${encryption-key}") String encryptionKey) throws GeneralSecurityException, IOException {
+    public StringEncryptor(@Value("${encryption-key}") String encryptionKey) throws GeneralSecurityException, IOException {
         TinkConfig.register();
         aead = CleartextKeysetHandle.read(
                 JsonKeysetReader.withString(encryptionKey)).getPrimitive(Aead.class);

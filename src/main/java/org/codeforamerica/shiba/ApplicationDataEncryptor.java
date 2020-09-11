@@ -8,21 +8,21 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 @Component
-public class JsonTinkEncryptor implements Encryptor {
+public class ApplicationDataEncryptor implements Encryptor<ApplicationData> {
     private final ObjectMapper objectMapper;
-    private final TinkEncryptor tinkEncryptor;
+    private final Encryptor<String> stringEncryptor;
 
-    public JsonTinkEncryptor(
+    public ApplicationDataEncryptor(
             ObjectMapper objectMapper,
-            TinkEncryptor tinkEncryptor) {
+            Encryptor<String> stringEncryptor) {
         this.objectMapper = objectMapper;
-        this.tinkEncryptor = tinkEncryptor;
+        this.stringEncryptor = stringEncryptor;
     }
 
     @Override
     public byte[] encrypt(ApplicationData data) {
         try {
-            return tinkEncryptor.encrypt(objectMapper.writeValueAsString(data));
+            return stringEncryptor.encrypt(objectMapper.writeValueAsString(data));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -31,7 +31,7 @@ public class JsonTinkEncryptor implements Encryptor {
     @Override
     public ApplicationData decrypt(byte[] encryptedData) {
         try {
-            return objectMapper.readValue(tinkEncryptor.decrypt(encryptedData), ApplicationData.class);
+            return objectMapper.readValue(stringEncryptor.decrypt(encryptedData), ApplicationData.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
