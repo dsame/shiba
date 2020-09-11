@@ -103,6 +103,12 @@ dependencies {
 compileJava.inputs.files(processResources)
 
 test {
+    doFirst {
+        file('.env.test').readLines().each() {
+            def (key, value) = it.split('=', 2)
+            environment(key, value)
+        }
+    }
     useJUnitPlatform()
 }
 
