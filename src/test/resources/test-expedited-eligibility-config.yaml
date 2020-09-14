@@ -6,12 +6,15 @@ test-expedited-eligibility:
   income:
     pageName: incomePage
     inputName: incomeInput
+    defaultValue: 200
   migrantWorker:
     pageName: migrantWorkerPage
     inputName: migrantWorkerInput
+    required: true
   housingCosts:
     pageName: housingCostsPage
     inputName: housingCostsInput
   utilityExpensesSelections:
     pageName: utilityExpensesSelectionsPage
     inputName: utilityExpensesSelectionsInput
+    required: true

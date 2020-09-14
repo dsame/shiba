@@ -14,7 +14,6 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 class ExpeditedEligibilityMapperTest {
@@ -26,7 +25,7 @@ class ExpeditedEligibilityMapperTest {
         ApplicationData appData = new ApplicationData();
         Application application = new Application("someId", ZonedDateTime.now(), appData, County.OTHER, "");
 
-        when(mockDecider.decide(any())).thenReturn(ExpeditedEligibility.ELIGIBLE);
+        when(mockDecider.decide(null)).thenReturn(ExpeditedEligibility.ELIGIBLE);
 
         assertThat(mapper.map(application, Recipient.CLIENT)).containsExactly(
                 new ApplicationInput(
@@ -47,11 +46,11 @@ class ExpeditedEligibilityMapperTest {
         appData.setPagesData(pagesData);
         Application application = new Application("someId", ZonedDateTime.now(), appData, County.OTHER, "");
 
-        when(mockDecider.decide(any())).thenReturn(ExpeditedEligibility.NOT_ELIGIBLE);
+        when(mockDecider.decide(null)).thenReturn(ExpeditedEligibility.NOT_ELIGIBLE);
 
         List<ApplicationInput> result = mapper.map(application, Recipient.CLIENT);
 
-        verify(mockDecider).decide(pagesData);
+        verify(mockDecider).decide(null);
         assertThat(result).containsExactly(
                 new ApplicationInput(
                         "expeditedEligibility",

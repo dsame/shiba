@@ -1,5 +1,8 @@
 package org.codeforamerica.shiba.output.caf;
 
+import lombok.Value;
+
+@Value
 class HourlyJobIncomeInformation implements JobIncomeInformation {
     Double hourlyWage;
     Double hoursAWeek;
