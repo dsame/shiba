@@ -78,8 +78,6 @@ public class LandmarkPageTest extends AbstractStaticMessageSourcePageTest {
             LandmarkPageTest.metrics = metricsClone;
             ConfirmationData confirmationDataClone = new ConfirmationData();
             confirmationDataClone.setId(this.confirmationData.getId());
-            confirmationDataClone.setCompletedAt(this.confirmationData.getCompletedAt());
-            confirmationDataClone.setCounty(this.confirmationData.getCounty());
             LandmarkPageTest.confirmationData = confirmationDataClone;
             return "testTerminalPage";
         }
