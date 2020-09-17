@@ -293,3 +293,23 @@ html {
     margin-left: 0;
     margin-right: 0;
 }
+
+.feedback-buttons {
+    margin-right: 0.5rem;
+    cursor: pointer;
+    border: 2px solid #121111;
+    background-size: 65%;
+    background-position-x: center;
+    background-position-y: center;
+    height: 5rem;
+    width: 5rem;
+}
+
+.textarea {
+    resize: none;
+}
+
+input:checked + .feedback-buttons {
+    /* TODO: Update this 'checked' styling */
+    background-color: magenta;
+}

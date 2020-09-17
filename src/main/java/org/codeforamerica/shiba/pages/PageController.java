@@ -13,10 +13,13 @@ import org.codeforamerica.shiba.pages.data.ApplicationData;
 import org.codeforamerica.shiba.pages.data.PageData;
 import org.codeforamerica.shiba.pages.data.PagesData;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletResponse;
@@ -24,6 +27,7 @@ import javax.servlet.http.HttpSession;
 import java.time.Clock;
 import java.time.ZoneId;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 @Controller
@@ -36,6 +40,7 @@ public class PageController {
     private final ApplicationFactory applicationFactory;
     private final ConfirmationData confirmationData;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final MessageSource messageSource;
 
     public PageController(
             ApplicationConfiguration applicationConfiguration,
@@ -45,7 +50,8 @@ public class PageController {
             ApplicationRepository applicationRepository,
             ApplicationFactory applicationFactory,
             ConfirmationData confirmationData,
-            ApplicationEventPublisher applicationEventPublisher) {
+            ApplicationEventPublisher applicationEventPublisher,
+            MessageSource messageSource) {
         this.applicationData = applicationData;
         this.applicationConfiguration = applicationConfiguration;
         this.clock = clock;
@@ -54,6 +60,7 @@ public class PageController {
         this.applicationFactory = applicationFactory;
         this.confirmationData = confirmationData;
         this.applicationEventPublisher = applicationEventPublisher;
+        this.messageSource = messageSource;
     }
 
     @GetMapping("/")
@@ -241,5 +248,24 @@ public class PageController {
         } else {
             return new ModelAndView("redirect:/pages/" + submitPage);
         }
+    }
+
+    @PostMapping("/submit-feedback")
+    RedirectView submitFeedback(Feedback feedback,
+                                RedirectAttributes redirectAttributes,
+                                Locale locale) {
+        String terminalPage = applicationConfiguration.getLandmarkPages().getTerminalPage();
+        if (confirmationData.getId() == null) {
+            return new RedirectView("/pages/" + terminalPage);
+        }
+        if (feedback.getSentiment() == null && StringUtils.isEmpty(feedback.getFeedback())) {
+            redirectAttributes.addFlashAttribute("feedbackFailure", messageSource.getMessage("success.feedback-failure", null, locale));
+            return new RedirectView("/pages/" + terminalPage);
+        }
+        redirectAttributes.addFlashAttribute("feedbackSuccess", messageSource.getMessage("success.feedback-success", null, locale));
+        Application application = applicationRepository.find(confirmationData.getId());
+        Application updatedApplication = application.addFeedback(feedback);
+        applicationRepository.save(updatedApplication);
+        return new RedirectView("/pages/" + terminalPage);
     }
 }

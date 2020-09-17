@@ -3,6 +3,7 @@ package org.codeforamerica.shiba.metrics;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.codeforamerica.shiba.ApplicationRepository;
 import org.codeforamerica.shiba.County;
+import org.codeforamerica.shiba.pages.Sentiment;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -28,7 +29,6 @@ public class MetricsController {
         Duration averageTimeToCompleteForWeek = applicationRepository.getAverageTimeToCompleteWeekToDate(CENTRAL_ZONE_ID);
         Duration medianTimeToCompleteForWeek = applicationRepository.getMedianTimeToCompleteWeekToDate(CENTRAL_ZONE_ID);
 
-
         return new ModelAndView("metricsDashboard", Map.of(
                 "applicationsSubmitted", applicationsSubmitted,
                 "medianTimeToComplete", DurationFormatUtils.formatDuration(medianTimeToComplete.toMillis(), TIME_TO_COMPLETE_FORMAT),
@@ -36,7 +36,9 @@ public class MetricsController {
                 "medianTimeToCompleteForWeek", DurationFormatUtils.formatDuration(medianTimeToCompleteForWeek.toMillis(), TIME_TO_COMPLETE_FORMAT),
                 "counties", County.values(),
                 "countyTotalSubmission", applicationRepository.countByCounty(),
-                "countyTotalSubmissionWeekToDate", applicationRepository.countByCountyWeekToDate(CENTRAL_ZONE_ID)
+                "countyTotalSubmissionWeekToDate", applicationRepository.countByCountyWeekToDate(CENTRAL_ZONE_ID),
+                "sentimentDistribution", applicationRepository.getSentimentDistribution(),
+                "sentiments", Sentiment.values()
         ));
     }
 }
