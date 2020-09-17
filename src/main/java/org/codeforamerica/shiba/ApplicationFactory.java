@@ -74,7 +74,6 @@ public class ApplicationFactory {
                 .build();
     }
 
-//    TODO: Move this file name generation elsewhere (out of the repository)
     @NotNull
     private String createFileName(String id, ApplicationData applicationData, County county, ZonedDateTime completedAt) {
         List<String> programsList = applicationData.getPagesData().getPage("choosePrograms").get("programs").getValue();
