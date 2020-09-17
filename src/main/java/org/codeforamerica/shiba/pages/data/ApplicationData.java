@@ -41,5 +41,4 @@ public class ApplicationData {
                 .map(NextPage::getPageName)
                 .orElseThrow(() -> new RuntimeException("Cannot find suitable next page."));
     }
-
 }
