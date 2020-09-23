@@ -164,6 +164,9 @@ public class PageController {
         return new ModelAndView(pageToRender, model);
     }
 
+//    @GetMapping("/pages/addressValidation")
+//    ModelAndView getValidationPage() { return new ModelAndView("validationPage"); };
+
     @PostMapping("/groups/{groupName}/delete")
     RedirectView deleteGroup(@PathVariable String groupName, HttpSession httpSession) {
         this.applicationData.getSubworkflows().remove(groupName);

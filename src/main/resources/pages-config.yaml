@@ -1167,6 +1167,8 @@ shiba-configuration:
       name: submittingApplication
       pageTitle:
         value: submitting-application.title
+    - &addressValidation
+      name: addressValidation
     - &registerToVote
       name: registerToVote
       headerKey:
@@ -1219,7 +1221,11 @@ shiba-configuration:
     homeAddress:
       pageConfiguration: *homeAddress
       nextPages:
-        - pageName: mailingAddress
+        - pageName: addressValidation
+    addressValidation:
+      pageConfiguration: *addressValidation
+      datasources:
+        - pageName: homeAddress
     mailingAddress:
       pageConfiguration: *mailingAddress
       skipCondition:
