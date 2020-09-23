@@ -62,7 +62,6 @@ class SecurityConfigurationTest {
                 .completedAt(ZonedDateTime.now())
                 .applicationData(null)
                 .county(null)
-                .fileName("")
                 .timeToComplete(null)
                 .build());
         when(mappers.map(any(), any())).thenReturn(List.of());

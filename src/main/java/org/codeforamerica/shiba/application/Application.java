@@ -19,7 +19,6 @@ public class Application {
     ZonedDateTime completedAt;
     ApplicationData applicationData;
     County county;
-    String fileName;
     Duration timeToComplete;
     Sentiment sentiment;
     String feedback;
@@ -33,7 +32,6 @@ public class Application {
                 this.completedAt,
                 this.applicationData,
                 this.county,
-                this.fileName,
                 this.timeToComplete,
                 sentiment,
                 feedbackText);

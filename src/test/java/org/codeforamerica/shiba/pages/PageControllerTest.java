@@ -98,7 +98,6 @@ class PageControllerTest {
                 .completedAt(ZonedDateTime.now())
                 .applicationData(null)
                 .county(null)
-                .fileName("")
                 .timeToComplete(null)
                 .build());
         messageSource.addMessage("success.feedback-success", Locale.ENGLISH, "default success message");
@@ -129,7 +128,6 @@ class PageControllerTest {
                 .completedAt(ZonedDateTime.now())
                 .applicationData(applicationData)
                 .county(null)
-                .fileName("")
                 .timeToComplete(null)
                 .build();
         when(applicationFactory.newApplication(any(), eq(applicationData), eq(metrics))).thenReturn(application);
@@ -165,7 +163,6 @@ class PageControllerTest {
                 .completedAt(completedAt)
                 .applicationData(applicationData)
                 .county(null)
-                .fileName("")
                 .timeToComplete(null)
                 .build();
         when(applicationRepository.getNextId()).thenReturn(applicationId);

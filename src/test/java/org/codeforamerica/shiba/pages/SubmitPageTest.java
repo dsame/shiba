@@ -29,6 +29,7 @@ import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 @Sql(statements = {"TRUNCATE TABLE applications"})
 public class SubmitPageTest extends AbstractStaticMessageSourcePageTest {
@@ -46,7 +47,7 @@ public class SubmitPageTest extends AbstractStaticMessageSourcePageTest {
     @MockBean
     ApplicationSubmittedListener applicationSubmittedListener;
 
-    @SpyBean
+    @MockBean
     ApplicationFactory applicationFactory;
 
     @Test
@@ -54,7 +55,6 @@ public class SubmitPageTest extends AbstractStaticMessageSourcePageTest {
         String applicationId = "someId";
         County county = County.HENNEPIN;
         ApplicationData applicationData = new ApplicationData();
-        applicationData.setPagesData(new PagesData(Map.of("choosePrograms", new PageData(Map.of("programs", InputData.builder().value(emptyList()).build())))));
         Sentiment sentiment = Sentiment.HAPPY;
         String feedbackText = "someFeedback";
         Application application = Application.builder()
@@ -62,12 +62,11 @@ public class SubmitPageTest extends AbstractStaticMessageSourcePageTest {
                 .completedAt(ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 11, 10), ZoneOffset.UTC))
                 .applicationData(applicationData)
                 .county(county)
-                .fileName("")
                 .timeToComplete(Duration.ofSeconds(124))
                 .sentiment(sentiment)
                 .feedback(feedbackText)
                 .build();
-        doReturn(application).when(applicationFactory).newApplication(any(), any(), any());
+        when(applicationFactory.newApplication(any(), any(), any())).thenReturn(application);
 
         navigateTo("firstPage");
 

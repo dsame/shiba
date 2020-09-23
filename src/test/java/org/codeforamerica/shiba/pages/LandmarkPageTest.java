@@ -53,9 +53,6 @@ public class LandmarkPageTest extends AbstractStaticMessageSourcePageTest {
     @MockBean
     private ApplicationEventPublisher applicationEventPublisher;
 
-    @SpyBean
-    private ApplicationFactory applicationFactory;
-
     @MockBean
     private ApplicationSubmittedListener applicationSubmittedListener;
 
@@ -102,17 +99,6 @@ public class LandmarkPageTest extends AbstractStaticMessageSourcePageTest {
         staticMessageSource.addMessage("fourth-page-title", Locale.US, "fourth page title");
         staticMessageSource.addMessage("first-page-title", Locale.US, "first page title");
         staticMessageSource.addMessage("fourth-page-title", Locale.US, fourthPageTitle);
-        ApplicationData applicationData = new ApplicationData();
-        applicationData.setPagesData(new PagesData(Map.of("choosePrograms", new PageData(Map.of("programs", InputData.builder().value(emptyList()).build())))));
-        Application application = Application.builder()
-                .id("foo")
-                .completedAt(ZonedDateTime.now())
-                .applicationData(applicationData)
-                .county(County.OTHER)
-                .fileName("")
-                .timeToComplete(Duration.ofSeconds(45))
-                .build();
-        doReturn(application).when(applicationFactory).newApplication(any(), any(), any());
     }
 
     @Test
