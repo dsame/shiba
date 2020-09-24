@@ -347,6 +347,10 @@ shiba-configuration:
           promptMessage:
             promptMessageFragmentName: doYouLiveAlonePrompt
           type: YES_NO
+    - &startHousehold
+      name: startHousehold
+      pageTitle:
+        value: start-household.title
     - &introPersonalDetails
       name: introPersonalDetails
       pageTitle:
@@ -1243,6 +1247,10 @@ shiba-configuration:
         - pageName: contactInfo
     doYouLiveAlone:
       pageConfiguration: *doYouLiveAlone
+      nextPages:
+        - pageName: introPersonalDetails
+    startHousehold:
+      pageConfiguration: *startHousehold
       nextPages:
         - pageName: introPersonalDetails
     introPersonalDetails:
