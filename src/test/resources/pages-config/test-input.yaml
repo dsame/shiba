@@ -53,7 +53,8 @@ shiba-configuration-input:
                 messageKey: radio-true
               - value: "false"
                 messageKey: radio-false
-            followUpsValue: "false"
+            followUpsValue:
+              - "false"
             followUps:
               - name: followUpTextInput
                 type: TEXT
