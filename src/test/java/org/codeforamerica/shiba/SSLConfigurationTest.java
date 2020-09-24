@@ -53,8 +53,7 @@ public class SSLConfigurationTest {
                 .setSSLHostnameVerifier(new NoopHostnameVerifier())
                 .build();
         WireMockConfiguration options = WireMockConfiguration.wireMockConfig()
-                .dynamicPort()
-                .dynamicHttpsPort()
+                .port(6066)
                 .needClientAuth(true)
                 .trustStorePath("src/test/resources/test-truststore.jks")
                 .trustStorePassword(keystorePassword);
