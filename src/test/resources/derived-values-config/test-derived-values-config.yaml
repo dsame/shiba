@@ -2,7 +2,7 @@ test-derived-values:
   - groupName: groupName1
     fieldName: value1
     values:
-      - value: !!org.codeforamerica.shiba.output.LiteralDerivedValueConfiguration
+      - value:org.codeforamerica.shiba.output.LiteralDerivedValueConfiguration
           literal: foo
         type: SINGLE_VALUE
   - groupName: groupName2

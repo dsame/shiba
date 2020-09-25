@@ -1,6 +1,7 @@
 package org.codeforamerica.shiba.pages;
 
 import org.codeforamerica.shiba.ConfirmationData;
+import org.codeforamerica.shiba.Query;
 import org.codeforamerica.shiba.YamlPropertySourceFactory;
 import org.codeforamerica.shiba.application.Application;
 import org.codeforamerica.shiba.application.ApplicationFactory;
@@ -31,6 +32,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.*;
 import java.util.Locale;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -45,6 +47,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class PageControllerTest {
 
     private StaticMessageSource messageSource = new StaticMessageSource();
+    private Map<String, Query> queries = mock(Map.class);
 
     @TestConfiguration
     @PropertySource(value = "classpath:pages-config/test-pages-controller.yaml", factory = YamlPropertySourceFactory.class)
@@ -69,6 +72,7 @@ class PageControllerTest {
     @Autowired
     ApplicationConfiguration applicationConfiguration;
 
+
     @BeforeEach
     void setUp() {
         PageController pageController = new PageController(
@@ -80,8 +84,8 @@ class PageControllerTest {
                 applicationFactory,
                 confirmationData,
                 messageSource,
-                pageEventPublisher
-        );
+                pageEventPublisher,
+                queries);
 
         mockMvc = MockMvcBuilders.standaloneSetup(pageController)
                 .build();

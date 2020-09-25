@@ -1,0 +1,23 @@
+query:
+  pageDefinitions:
+    - &firstPage
+      pageTitle:
+        value: dummy-page-title
+      name: firstPage
+    - &secondPage
+      pageTitle:
+        value: dummy-page-title
+      name: secondPage
+      query: validateAddress
+      inputs:
+  workflow:
+    firstPage:
+      pageConfiguration: *firstPage
+      nextPages:
+        - pageName: secondPage
+    secondPage:
+      pageConfiguration: *secondPage
+      datasources:
+        - pageName: firstPage
+  landmarkPages:
+    landingPages: []

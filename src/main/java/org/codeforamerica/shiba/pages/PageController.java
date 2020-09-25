@@ -1,6 +1,7 @@
 package org.codeforamerica.shiba.pages;
 
 import org.codeforamerica.shiba.ConfirmationData;
+import org.codeforamerica.shiba.Query;
 import org.codeforamerica.shiba.application.Application;
 import org.codeforamerica.shiba.application.ApplicationFactory;
 import org.codeforamerica.shiba.application.ApplicationRepository;
@@ -37,6 +38,7 @@ public class PageController {
     private final ConfirmationData confirmationData;
     private final MessageSource messageSource;
     private final PageEventPublisher pageEventPublisher;
+    private final Map<String, Query> queries;
 
     public PageController(
             ApplicationConfiguration applicationConfiguration,
@@ -47,7 +49,7 @@ public class PageController {
             ApplicationFactory applicationFactory,
             ConfirmationData confirmationData,
             MessageSource messageSource,
-            PageEventPublisher pageEventPublisher) {
+            PageEventPublisher pageEventPublisher, Map<String, Query> queries) {
         this.applicationData = applicationData;
         this.applicationConfiguration = applicationConfiguration;
         this.clock = clock;
@@ -57,6 +59,7 @@ public class PageController {
         this.confirmationData = confirmationData;
         this.messageSource = messageSource;
         this.pageEventPublisher = pageEventPublisher;
+        this.queries = queries;
     }
 
     @GetMapping("/")
@@ -94,6 +97,24 @@ public class PageController {
             HttpServletResponse response,
             HttpSession httpSession
     ) {
+//     if call arbitrary endpoint X for page != null
+//        WebClient call arbitrary endpoint X
+
+        // Map.of(
+        // commandName, Command
+        // )
+        //pageConfg.getcommands().map(command-> command.retrieve);
+//        interface Command<T> {
+//            T retrieve();
+//        }
+//
+//        ValidateAddress implements Command<Address> {
+//            Address retrieve() {
+//
+//            }
+//        }
+
+
         LandmarkPagesConfiguration landmarkPagesConfiguration = applicationConfiguration.getLandmarkPages();
 
         if (landmarkPagesConfiguration.isLandingPage(pageName)) {
@@ -112,6 +133,9 @@ public class PageController {
 
         PageWorkflowConfiguration pageWorkflow = this.applicationConfiguration.getPageWorkflow(pageName);
         PageConfiguration pageConfiguration = pageWorkflow.getPageConfiguration();
+
+        //Have retrieve return a Map<String, Object>?
+//        Object arbitraryData = this.commands.get(pageWorkflow.getCommandName()).retrieve(applicationData);
 
         PagesData pagesData;
         if (pageWorkflow.getGroupName() != null) {
@@ -163,6 +187,9 @@ public class PageController {
         }
         return new ModelAndView(pageToRender, model);
     }
+
+//    @GetMapping("/pages/addressValidation")
+//    ModelAndView getValidationPage() { return new ModelAndView("validationPage"); };
 
     @PostMapping("/groups/{groupName}/delete")
     RedirectView deleteGroup(@PathVariable String groupName, HttpSession httpSession) {

@@ -8,4 +8,7 @@ public class Address {
     String city;
     String state;
     String zipcode;
+
+    @Override
+    public String toString() { return ""; }
 }

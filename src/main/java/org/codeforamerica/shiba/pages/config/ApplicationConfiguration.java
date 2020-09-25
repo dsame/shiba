@@ -1,6 +1,7 @@
 package org.codeforamerica.shiba.pages.config;
 
 import lombok.Data;
+import org.codeforamerica.shiba.Query;
 import org.codeforamerica.shiba.YamlPropertySourceFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +19,7 @@ public class ApplicationConfiguration {
     private LandmarkPagesConfiguration landmarkPages;
     private Map<String, PageWorkflowConfiguration> workflow;
     private Map<String, PageGroupConfiguration> pageGroups;
+    private Map<String, Query> queries;
 
     public PageWorkflowConfiguration getPageWorkflow(String pageName) {
         return this.workflow.get(pageName);

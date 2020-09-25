@@ -1,7 +1,9 @@
 package org.codeforamerica.shiba.pages;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
+import org.codeforamerica.shiba.YamlPropertySourceFactory;
 import org.codeforamerica.shiba.metrics.Metrics;
+import org.codeforamerica.shiba.output.caf.ParsingConfiguration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,9 +13,12 @@ import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -42,12 +47,20 @@ abstract class AbstractBasePageTest {
 
     protected Page testPage;
 
+    @TestConfiguration
+    @PropertySource(value = "classpath:test-parsing-config.yaml", factory = YamlPropertySourceFactory.class)
     static class MetricsTestConfigurationWithExistingStartTime {
         @Bean
         public Metrics metrics() {
             Metrics metrics = new Metrics();
             metrics.setStartTimeOnce(Instant.now());
             return metrics;
+        }
+
+        @Bean
+        @ConfigurationProperties(prefix = "test-parsing")
+        public ParsingConfiguration parsingConfiguration() {
+            return new ParsingConfiguration();
         }
     }
 

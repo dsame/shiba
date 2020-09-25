@@ -43,4 +43,9 @@ public class SmartyStreetClient implements LocationClient {
                 .flatMap(verifyStreetResponse -> verifyStreetResponse.stream().findFirst())
                 .map(addressCandidate -> addressCandidate.getMetadata().getCountyName());
     }
+
+    @Override
+    public Optional<Address> validateAddress(Address address) {
+        return null;
+    }
 }
