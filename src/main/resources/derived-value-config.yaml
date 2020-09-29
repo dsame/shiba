@@ -218,6 +218,58 @@ derived-values:
             - pageName: choosePrograms
               input: programs
               value: CCAP
+  - groupName: homeAddress
+    fieldName: zipCode
+    values:
+      - value: !!org.codeforamerica.shiba.output.ReferenceDerivedValueConfiguration
+          pageName: homeAddress
+          inputName: enrichedZipCode
+        type: SINGLE_VALUE
+        condition:
+          logicalOperator: OR
+          conditions:
+            - pageName: homeAddressValidation
+              input: useEnrichedAddress
+              value: "true"
+  - groupName: homeAddress
+    fieldName: streeetAddress
+    values:
+      - value: !!org.codeforamerica.shiba.output.ReferenceDerivedValueConfiguration
+          pageName: homeAddress
+          inputName: enrichedStreetAddress
+        type: SINGLE_VALUE
+        condition:
+          logicalOperator: OR
+          conditions:
+            - pageName: homeAddressValidation
+              input: useEnrichedAddress
+              value: "true"
+  - groupName: homeAddress
+    fieldName: state
+    values:
+      - value: !!org.codeforamerica.shiba.output.ReferenceDerivedValueConfiguration
+          pageName: homeAddress
+          inputName: enrichedState
+        type: SINGLE_VALUE
+        condition:
+          logicalOperator: OR
+          conditions:
+            - pageName: homeAddressValidation
+              input: useEnrichedAddress
+              value: "true"
+  - groupName: homeAddress
+    fieldName: city
+    values:
+      - value: !!org.codeforamerica.shiba.output.ReferenceDerivedValueConfiguration
+          pageName: homeAddress
+          inputName: enrichedCity
+        type: SINGLE_VALUE
+        condition:
+          logicalOperator: OR
+          conditions:
+            - pageName: homeAddressValidation
+              input: useEnrichedAddress
+              value: "true"
   - groupName: mailingAddress
     fieldName: zipCode
     values:

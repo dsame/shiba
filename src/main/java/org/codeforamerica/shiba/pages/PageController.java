@@ -1,7 +1,7 @@
 package org.codeforamerica.shiba.pages;
 
+import org.codeforamerica.shiba.ApplicationEnrichment;
 import org.codeforamerica.shiba.ConfirmationData;
-import org.codeforamerica.shiba.ApplicationQueries;
 import org.codeforamerica.shiba.application.Application;
 import org.codeforamerica.shiba.application.ApplicationFactory;
 import org.codeforamerica.shiba.application.ApplicationRepository;
@@ -39,7 +39,7 @@ public class PageController {
     private final ConfirmationData confirmationData;
     private final MessageSource messageSource;
     private final PageEventPublisher pageEventPublisher;
-    private final ApplicationQueries applicationQueries;
+    private final ApplicationEnrichment applicationEnrichment;
 
     public PageController(
             ApplicationConfiguration applicationConfiguration,
@@ -51,7 +51,7 @@ public class PageController {
             ConfirmationData confirmationData,
             MessageSource messageSource,
             PageEventPublisher pageEventPublisher,
-            ApplicationQueries applicationQueries) {
+            ApplicationEnrichment applicationEnrichment) {
         this.applicationData = applicationData;
         this.applicationConfiguration = applicationConfiguration;
         this.clock = clock;
@@ -61,7 +61,7 @@ public class PageController {
         this.confirmationData = confirmationData;
         this.messageSource = messageSource;
         this.pageEventPublisher = pageEventPublisher;
-        this.applicationQueries = applicationQueries;
+        this.applicationEnrichment = applicationEnrichment;
     }
 
     @GetMapping("/")
@@ -79,6 +79,7 @@ public class PageController {
             @PathVariable String pageName,
             @RequestParam(required = false, defaultValue = "0") Integer option
     ) {
+//        TODO: Does not work for multiple skips
         PageWorkflowConfiguration pageWorkflow = this.applicationConfiguration.getPageWorkflow(pageName);
         PagesData pagesData = this.applicationData.getPagesData();
         NextPage nextPage = applicationData.getNextPageName(pageWorkflow, option);
@@ -150,11 +151,6 @@ public class PageController {
             model.put("county", application.getCounty());
             model.put("sentiment", application.getSentiment());
             model.put("feedbackText", application.getFeedback());
-        }
-
-        if (pageWorkflow.getQuery() != null) {
-            Object queryResult = this.applicationQueries.getQuery(pageWorkflow.getQuery()).run(applicationData);
-            model.put("queryResult", queryResult);
         }
 
         String pageToRender;
@@ -235,6 +231,11 @@ OriginalAddress
                     .addIteration(groupName, applicationData.getIncompleteIterations().remove(groupName));
             pageEventPublisher.publish(new SubworkflowCompletedEvent(httpSession.getId(), groupName));
         }
+
+        Optional.ofNullable(pageWorkflow.getEnrichment())
+                .map(applicationEnrichment::getEnrichment)
+                .map(query -> query.process(applicationData))
+                .ifPresent(pageData::putAll);
 
         return pageData.isValid() ?
                 new ModelAndView(String.format("redirect:/pages/%s/navigation", pageName)) :

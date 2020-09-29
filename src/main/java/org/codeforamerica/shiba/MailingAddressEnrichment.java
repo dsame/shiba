@@ -4,8 +4,8 @@ import org.codeforamerica.shiba.application.parsers.MailingAddressParser;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MailingAddressValidationQuery extends AddressValidationQuery {
-    public MailingAddressValidationQuery(
+public class MailingAddressEnrichment extends AddressEnrichment {
+    public MailingAddressEnrichment(
             MailingAddressParser mailingAddressParser,
             LocationClient locationClient) {
         this.parser = mailingAddressParser;

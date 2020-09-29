@@ -1,7 +1,10 @@
 <!DOCTYPE html >
 <th:block th:fragment="addressValidationInput (input, data, queryResult)"
           th:with="formInputName=${T(org.codeforamerica.shiba.pages.PageUtils).getFormInputName(input.name)},
-                   addressValidated=${queryResult.get('validated') != null}">
+                   addressData=${pageDatasources.values()[0]},
+                   addressValidated=${addressData.containsKey('enrichedStreetAddress')}"
+>
+    <div th:text="${addressData.keySet()}"></div>
     <div class="grid__item spacing-above-35 spacing-below-35" xmlns:th="http://www.thymeleaf.org">
         <h2 th:if="${addressValidated}" th:text="#{address-validation.check-your-address}"></h2>
         <h2 th:unless="${addressValidated}" th:text="#{address-validation.make-sure-your-address-is-correct}"></h2>
@@ -9,25 +12,24 @@
         <p th:unless="${addressValidated}" th:text="#{address-validation.we-couldnt-find-your-address}" class="notice--warning"></p>
     </div>
     <div class="grid__item" xmlns:th="http://www.thymeleaf.org">
-        <label th:for="validated-address" class="radio-button"
+        <label th:for="enriched-address" class="radio-button"
                th:if="${addressValidated}">
             <span th:text="#{${input.options.get(0).messageKey}}"></span>
-            <p th:text="${queryResult.get('validated').street}"></p>
-            <p th:text="${queryResult.get('validated').city}"></p>
-            <p th:text="${queryResult.get('validated').state}"></p>
-            <p th:text="${queryResult.get('validated').zipcode}"></p>
-            <input type="radio" th:name="validated-address" th:id="validated-address"
+            <p th:text="${addressData.get('enrichedStreetAddress').value[0]}"></p>
+            <p th:text="${addressData.get('enrichedCity').value[0]}"></p>
+            <p th:text="${addressData.get('enrichedState').value[0]}"></p>
+            <p th:text="${addressData.get('enrichedZipCode').value[0]}"></p>
+            <input type="radio" th:name="${formInputName}" th:id="enriched-address"
                    th:value="true"
                    th:checked="true">
         </label>
-        </th:if>
         <label th:for="original-address" class="radio-button">
             <span th:text="#{${input.options.get(1).messageKey}}"></span>
-            <p th:text="${queryResult.get('original').street}"></p>
-            <p th:text="${queryResult.get('original').city}"></p>
-            <p th:text="${queryResult.get('original').state}"></p>
-            <p th:text="${queryResult.get('original').zipcode}"></p>
-            <input type="radio" th:name="original-address" th:id="original-address"
+            <p th:text="${addressData.get('streetAddress').value[0]}"></p>
+            <p th:text="${addressData.get('city').value[0]}"></p>
+            <p th:text="${addressData.get('state').value[0]}"></p>
+            <p th:text="${addressData.get('zipCode').value[0]}"></p>
+            <input type="radio" th:name="${formInputName}" th:id="original-address"
                    th:value="false"
                    th:checked="false">
         </label>

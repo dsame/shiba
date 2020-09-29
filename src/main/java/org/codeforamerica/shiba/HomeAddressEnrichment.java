@@ -4,8 +4,8 @@ import org.codeforamerica.shiba.application.parsers.HomeAddressParser;
 import org.springframework.stereotype.Component;
 
 @Component
-public class HomeAddressValidationQuery extends AddressValidationQuery {
-    public HomeAddressValidationQuery(
+public class HomeAddressEnrichment extends AddressEnrichment {
+    public HomeAddressEnrichment(
             HomeAddressParser homeAddressParser,
             LocationClient locationClient) {
         this.parser = homeAddressParser;

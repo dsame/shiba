@@ -1,0 +1,7 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div id="originalInput" th:text="${data.get('firstPage').get('someTextInput').value[0]}"></div>
+    <div id="enrichmentInput" th:text="${data.get('firstPage').get('someEnrichmentInput').value[0]}"></div>
+</body>
+</html>

@@ -1,0 +1,23 @@
+shiba-configuration-enrichment:
+  pageDefinitions:
+    - &firstPage
+      name: firstPage
+      pageTitle:
+        value: dummy-page-title
+      inputs:
+        - name: someTextInput
+          type: TEXT
+    - &testEnrichmentPage
+      name: testEnrichmentPage
+  workflow:
+    firstPage:
+      pageConfiguration: *firstPage
+      nextPages:
+        - pageName: testEnrichmentPage
+      enrichment: testEnrichment
+    testEnrichmentPage:
+      pageConfiguration: *testEnrichmentPage
+      datasources:
+        - pageName: firstPage
+  landmarkPages:
+    landingPages: [ ]
