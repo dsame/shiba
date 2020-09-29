@@ -43,4 +43,36 @@ public class SmartyStreetClient implements LocationClient {
                 .flatMap(verifyStreetResponse -> verifyStreetResponse.stream().findFirst())
                 .map(addressCandidate -> addressCandidate.getMetadata().getCountyName());
     }
+
+    @Override
+    public Optional<Address> validateAddress(Address address) {
+        WebClient webClient = WebClient.builder().baseUrl(smartyStreetUrl).build();
+        Optional<SmartyStreetVerifyStreetResponse> response = webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .queryParam("auth-id", authId)
+                        .queryParam("auth-token", authToken)
+                        .queryParam("street", address.getStreet())
+                        .queryParam("city", address.getCity())
+                        .queryParam("state", address.getState())
+                        .queryParam("zipcode", address.getZipcode())
+                        .queryParam("candidates", 1).build())
+                .retrieve()
+                .bodyToMono(SmartyStreetVerifyStreetResponse.class)
+                .onErrorResume(error -> Mono.empty())
+                .blockOptional();
+        return response
+                .flatMap(verifyStreetResponse -> verifyStreetResponse.stream().findFirst())
+                .map(addressCandidate -> {
+                    Components components = addressCandidate.getComponents();
+                    return new Address(
+                            String.format(
+                                    "%s %s %s",
+                                    components.getPrimaryNumber(), components.getStreetName(), components.getStreetSuffix()
+                            ),
+                            components.getCityName(),
+                            components.getStateAbbreviation(),
+                            components.getZipcode() + "-" + components.getPlus4Code()
+                    );
+                });
+    }
 }

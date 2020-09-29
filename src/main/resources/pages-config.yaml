@@ -1183,6 +1183,20 @@ shiba-configuration:
       name: submittingApplication
       pageTitle:
         value: submitting-application.title
+    - &addressValidation
+      name: addressValidation
+      pageTitle:
+        value: address-validation.title
+      hasPrimaryButton: false
+      inputs:
+        - name: useValidatedAddress
+          type: CUSTOM
+          customInputFragment: addressValidationInput
+          options:
+            - value: "true"
+              messageKey: address-validation.suggested-address
+            - value: "false"
+              messageKey: address-validation.address-you-entered
     - &registerToVote
       name: registerToVote
       headerKey:
@@ -1235,6 +1249,17 @@ shiba-configuration:
     homeAddress:
       pageConfiguration: *homeAddress
       nextPages:
+        - pageName: verifyHomeAddress
+    verifyHomeAddress:
+      pageConfiguration: *addressValidation
+      query: homeAddressValidationQuery
+      skipCondition:
+        pageName: homeAddress
+        input: sameMailingAddress
+        value: "false"
+      datasources:
+        - pageName: homeAddress
+      nextPages:
         - pageName: mailingAddress
     mailingAddress:
       pageConfiguration: *mailingAddress
@@ -1243,9 +1268,14 @@ shiba-configuration:
         input: sameMailingAddress
         value: "true"
       nextPages:
-        - pageName: reviewInfo
+        - pageName: verifyMailingAddress
       datasources:
         - pageName: homeAddress
+    verifyMailingAddress:
+      pageConfiguration: *addressValidation
+      query: mailingAddressValidationQuery
+      nextPages:
+        - pageName: reviewInfo
     reviewInfo:
       pageConfiguration: *reviewInfo
       nextPages:

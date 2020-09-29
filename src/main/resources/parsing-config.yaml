@@ -53,3 +53,17 @@ parsing:
       zipcode:
         pageName: homeAddress
         inputName: zipCode
+  mailingAddress:
+    pageInputs:
+      street:
+        pageName: mailingAddress
+        inputName: streetAddress
+      city:
+        pageName: mailingAddress
+        inputName: city
+      state:
+        pageName: mailingAddress
+        inputName: state
+      zipcode:
+        pageName: mailingAddress
+        inputName: zipCode

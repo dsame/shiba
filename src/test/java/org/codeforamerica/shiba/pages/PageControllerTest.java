@@ -1,6 +1,7 @@
 package org.codeforamerica.shiba.pages;
 
 import org.codeforamerica.shiba.ConfirmationData;
+import org.codeforamerica.shiba.ApplicationQueries;
 import org.codeforamerica.shiba.YamlPropertySourceFactory;
 import org.codeforamerica.shiba.application.Application;
 import org.codeforamerica.shiba.application.ApplicationFactory;
@@ -44,7 +45,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 class PageControllerTest {
 
-    private StaticMessageSource messageSource = new StaticMessageSource();
+    private final StaticMessageSource messageSource = new StaticMessageSource();
+    private ApplicationQueries applicationQueries = mock(ApplicationQueries.class);
 
     @TestConfiguration
     @PropertySource(value = "classpath:pages-config/test-pages-controller.yaml", factory = YamlPropertySourceFactory.class)
@@ -80,8 +82,8 @@ class PageControllerTest {
                 applicationFactory,
                 confirmationData,
                 messageSource,
-                pageEventPublisher
-        );
+                pageEventPublisher,
+                applicationQueries);
 
         mockMvc = MockMvcBuilders.standaloneSetup(pageController)
                 .build();

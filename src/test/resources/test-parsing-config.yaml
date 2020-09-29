@@ -52,3 +52,17 @@ test-parsing:
       zipcode:
         pageName: homeAddressPageName
         inputName: addressLine4
+  mailingAddress:
+    pageInputs:
+      street:
+        pageName: mailingAddressPageName
+        inputName: addressLine1
+      city:
+        pageName: mailingAddressPageName
+        inputName: addressLine2
+      state:
+        pageName: mailingAddressPageName
+        inputName: addressLine3
+      zipcode:
+        pageName: mailingAddressPageName
+        inputName: addressLine4

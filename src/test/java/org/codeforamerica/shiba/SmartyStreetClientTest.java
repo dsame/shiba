@@ -130,4 +130,46 @@ class SmartyStreetClientTest {
 
         assertThat(county).isEmpty();
     }
+
+    @Test
+    void returnAddress_whenVerifyAddressFindsCandidate() {
+        ApplicationData applicationData = new ApplicationData();
+        applicationData.setPagesData(new PagesData(Map.of("something", new PageData())));
+
+        String street = "1725 Slough Avenue";
+        String city = "Scranton";
+        String state = "PA";
+        String zipcode = "91402";
+        Address address = new Address(street, city, state, zipcode);
+        wireMockServer.stubFor(get(anyUrl())
+                .willReturn(okJson("[" +
+                        "  {" +
+                        "    \"components\": {" +
+                        "      \"primary_number\": \"222\"," +
+                        "      \"street_name\": \"Merchandise Mart\"," +
+                        "      \"street_suffix\": \"Plz\"," +
+                        "      \"city_name\": \"Chicago\"," +
+                        "      \"default_city_name\": \"Chicago\"," +
+                        "      \"state_abbreviation\": \"IL\"," +
+                        "      \"zipcode\": \"60654\"," +
+                        "      \"plus4_code\": \"1103\"" +
+                        "    }" +
+                        "  }" +
+                        "]"))
+        );
+
+        Address resultAddress = smartyStreetClient.validateAddress(address).get();
+
+        wireMockServer.verify(getRequestedFor(urlPathEqualTo("/"))
+                .withQueryParam("auth-id", equalTo(authId))
+                .withQueryParam("auth-token", equalTo(authToken))
+                .withQueryParam("street", equalTo(street))
+                .withQueryParam("city", equalTo(city))
+                .withQueryParam("state", equalTo(state))
+                .withQueryParam("zipcode", equalTo(zipcode))
+                .withQueryParam("candidates", equalTo("1"))
+        );
+
+        assertThat(resultAddress).isEqualTo(new Address("222 Merchandise Mart Plz", "Chicago", "IL", "60654-1103"));
+    }
 }

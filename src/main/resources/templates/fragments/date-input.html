@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<div th:fragment="date-input (input, data)"
+<div th:fragment="date-input (input, data, queryResult)"
      class="form-group"
      th:classappend="${!inputData.valid()} ? 'form-group--error' : ''"
      th:with="inputData=${data.get(input.name)}, formInputName=${T(org.codeforamerica.shiba.pages.PageUtils).getFormInputName(input.name)}">

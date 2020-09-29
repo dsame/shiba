@@ -1,5 +1,6 @@
 package org.codeforamerica.shiba.pages;
 
+import org.codeforamerica.shiba.Address;
 import org.codeforamerica.shiba.SmartyStreetClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,6 +50,9 @@ public class UserJourneyPageTest extends AbstractBasePageTest {
         when(clock.instant()).thenReturn(Instant.now());
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
         when(smartyStreetClient.getCounty(any())).thenReturn(Optional.empty());
+        when(smartyStreetClient.validateAddress(any())).thenReturn(
+                Optional.of(new Address("smarty street", "City", "CA", "03104"))
+        );
     }
 
     @Test
@@ -175,7 +179,11 @@ public class UserJourneyPageTest extends AbstractBasePageTest {
         mailingAddressPage.enterInput("streetAddress", "someStreetAddress");
         mailingAddressPage.enterInput("state", "IL");
         mailingAddressPage.enterInput("apartmentNumber", "someApartmentNumber");
-        mailingAddressPage.clickPrimaryButton();
+        Page validationPage = mailingAddressPage.clickPrimaryButton();
+
+        validationPage.clickInputById("validated-address");
+        validationPage.clickPrimaryButton();
+        assertThat(driver.findElementById("mailing-address_street").getText()).isEqualTo("smarty street");
     }
 
     private SuccessPage nonExpeditedFlowToSuccessPage() {

@@ -5,7 +5,7 @@ import org.codeforamerica.shiba.output.caf.ParsingConfiguration;
 import org.codeforamerica.shiba.pages.data.ApplicationData;
 
 public abstract class ApplicationDataParser<T> {
-    protected ParsingConfiguration parsingConfiguration;
+    ParsingConfiguration parsingConfiguration;
 
     public abstract T parse(ApplicationData applicationData);
 

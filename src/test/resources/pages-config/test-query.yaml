@@ -1,0 +1,12 @@
+query:
+  pageDefinitions:
+    - &testQueryPage
+      pageTitle:
+        value: dummy-page-title
+      name: secondPage
+  workflow:
+    testQueryPage:
+      pageConfiguration: *testQueryPage
+      query: validateAddress
+  landmarkPages:
+    landingPages: []

@@ -343,3 +343,12 @@ input[id='sad']:checked + .feedback-buttons {
     font-size: 1.6rem;
     line-height: 2.5rem;
 }
+
+.validated-address input[type=checkbox]:checked {
+    border: 2px #00891B;
+    border-radius: 5px;
+}
+.original-address input[type=checkbox]:checked {
+    border: 2px #00891B;
+    border-radius: 5px;
+}

@@ -1,6 +1,7 @@
 package org.codeforamerica.shiba.pages;
 
 import org.codeforamerica.shiba.ConfirmationData;
+import org.codeforamerica.shiba.ApplicationQueries;
 import org.codeforamerica.shiba.application.Application;
 import org.codeforamerica.shiba.application.ApplicationFactory;
 import org.codeforamerica.shiba.application.ApplicationRepository;
@@ -28,6 +29,7 @@ import java.util.Optional;
 
 @Controller
 public class PageController {
+    public static final ZoneId CENTRAL_TIMEZONE = ZoneId.of("America/Chicago");
     private final ApplicationData applicationData;
     private final ApplicationConfiguration applicationConfiguration;
     private final Clock clock;
@@ -37,6 +39,7 @@ public class PageController {
     private final ConfirmationData confirmationData;
     private final MessageSource messageSource;
     private final PageEventPublisher pageEventPublisher;
+    private final ApplicationQueries applicationQueries;
 
     public PageController(
             ApplicationConfiguration applicationConfiguration,
@@ -47,7 +50,8 @@ public class PageController {
             ApplicationFactory applicationFactory,
             ConfirmationData confirmationData,
             MessageSource messageSource,
-            PageEventPublisher pageEventPublisher) {
+            PageEventPublisher pageEventPublisher,
+            ApplicationQueries applicationQueries) {
         this.applicationData = applicationData;
         this.applicationConfiguration = applicationConfiguration;
         this.clock = clock;
@@ -57,6 +61,7 @@ public class PageController {
         this.confirmationData = confirmationData;
         this.messageSource = messageSource;
         this.pageEventPublisher = pageEventPublisher;
+        this.applicationQueries = applicationQueries;
     }
 
     @GetMapping("/")
@@ -141,10 +146,15 @@ public class PageController {
         if (landmarkPagesConfiguration.isTerminalPage(pageName)) {
             Application application = applicationRepository.find(confirmationData.getId());
             model.put("applicationId", application.getId());
-            model.put("submissionTime", application.getCompletedAt().withZoneSameInstant(ZoneId.of("America/Chicago")));
+            model.put("submissionTime", application.getCompletedAt().withZoneSameInstant(CENTRAL_TIMEZONE));
             model.put("county", application.getCounty());
             model.put("sentiment", application.getSentiment());
             model.put("feedbackText", application.getFeedback());
+        }
+
+        if (pageWorkflow.getQuery() != null) {
+            Object queryResult = this.applicationQueries.getQuery(pageWorkflow.getQuery()).run(applicationData);
+            model.put("queryResult", queryResult);
         }
 
         String pageToRender;
@@ -188,7 +198,10 @@ public class PageController {
         pageEventPublisher.publish(new SubworkflowIterationDeletedEvent(httpSession.getId(), groupName));
         return new ModelAndView("redirect:" + referer);
     }
-
+/*
+ValidatedAddress
+OriginalAddress
+* */
     @PostMapping("/pages/{pageName}")
     ModelAndView postFormPage(
             @RequestBody(required = false) MultiValueMap<String, String> model,
