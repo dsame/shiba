@@ -1264,6 +1264,7 @@ shiba-configuration:
       nextPages:
         - pageName: verifyHomeAddress
     verifyHomeAddress:
+#      TODO: Probably need a skip condition here if homeless and no address entered
       pageConfiguration: *homeAddressValidation
       datasources:
         - pageName: homeAddress

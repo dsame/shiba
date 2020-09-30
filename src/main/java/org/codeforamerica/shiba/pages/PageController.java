@@ -194,10 +194,7 @@ public class PageController {
         pageEventPublisher.publish(new SubworkflowIterationDeletedEvent(httpSession.getId(), groupName));
         return new ModelAndView("redirect:" + referer);
     }
-/*
-ValidatedAddress
-OriginalAddress
-* */
+
     @PostMapping("/pages/{pageName}")
     ModelAndView postFormPage(
             @RequestBody(required = false) MultiValueMap<String, String> model,
@@ -232,14 +229,15 @@ OriginalAddress
             pageEventPublisher.publish(new SubworkflowCompletedEvent(httpSession.getId(), groupName));
         }
 
-        Optional.ofNullable(pageWorkflow.getEnrichment())
-                .map(applicationEnrichment::getEnrichment)
-                .map(query -> query.process(applicationData))
-                .ifPresent(pageData::putAll);
-
-        return pageData.isValid() ?
-                new ModelAndView(String.format("redirect:/pages/%s/navigation", pageName)) :
-                new ModelAndView("redirect:/pages/" + pageName);
+        if (pageData.isValid()) {
+            Optional.ofNullable(pageWorkflow.getEnrichment())
+                    .map(applicationEnrichment::getEnrichment)
+                    .map(enrichment -> enrichment.process(applicationData))
+                    .ifPresent(pageData::putAll);
+            return new ModelAndView(String.format("redirect:/pages/%s/navigation", pageName));
+        } else {
+            return new ModelAndView("redirect:/pages/" + pageName);
+        }
     }
 
     @PostMapping("/submit")

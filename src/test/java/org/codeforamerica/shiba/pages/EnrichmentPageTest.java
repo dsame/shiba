@@ -8,6 +8,7 @@ import org.codeforamerica.shiba.pages.config.ApplicationConfiguration;
 import org.codeforamerica.shiba.pages.data.ApplicationData;
 import org.codeforamerica.shiba.pages.data.InputData;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.By;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -41,7 +42,7 @@ public class EnrichmentPageTest extends AbstractBasePageTest {
         @Override
         public EnrichmentResult process(ApplicationData applicationData) {
             String pageInputValue = applicationData
-                    .getInputDataMap("firstPage")
+                    .getInputDataMap("testEnrichmentPage")
                     .get("someTextInput")
                     .getValue().get(0);
             return new EnrichmentResult(Map.of(
@@ -55,11 +56,19 @@ public class EnrichmentPageTest extends AbstractBasePageTest {
 
     @Test
     void enrichesThePageDataWithTheEnrichmentResults() {
-        navigateTo("firstPage");
+        navigateTo("testEnrichmentPage");
         testPage.enterInput("someTextInput", "someText");
         testPage.clickPrimaryButton();
 
         assertThat(driver.findElementById("originalInput").getText()).isEqualTo("someText");
         assertThat(driver.findElementById("enrichmentInput").getText()).isEqualTo("someText-someEnrichmentValue");
+    }
+
+    @Test
+    void doesNotEnrichThePageDataIfPageDataIsInvalid() {
+        navigateTo("testEnrichmentPage");
+        testPage.clickPrimaryButton();
+
+        assertThat(driver.findElements(By.id("enrichmentInput"))).isEmpty();
     }
 }

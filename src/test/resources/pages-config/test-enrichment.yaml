@@ -1,23 +1,24 @@
 shiba-configuration-enrichment:
   pageDefinitions:
-    - &firstPage
-      name: firstPage
+    - &testEnrichmentPage
+      name: testEnrichmentPage
       pageTitle:
         value: dummy-page-title
       inputs:
         - name: someTextInput
           type: TEXT
-    - &testEnrichmentPage
-      name: testEnrichmentPage
+          promptMessage:
+            promptMessageFragmentName: testEnrichmentPage
+          validators:
+            - validation: NOT_BLANK
+              errorMessageKey: dummy-error-message-key
   workflow:
-    firstPage:
-      pageConfiguration: *firstPage
-      nextPages:
-        - pageName: testEnrichmentPage
-      enrichment: testEnrichment
     testEnrichmentPage:
       pageConfiguration: *testEnrichmentPage
+      enrichment: testEnrichment
+      nextPages:
+        - pageName: testEnrichmentPage
       datasources:
-        - pageName: firstPage
+        - pageName: testEnrichmentPage
   landmarkPages:
     landingPages: [ ]

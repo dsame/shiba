@@ -4,7 +4,6 @@
                    addressData=${pageDatasources.values()[0]},
                    addressValidated=${addressData.containsKey('enrichedStreetAddress')}"
 >
-    <div th:text="${addressData.keySet()}"></div>
     <div class="grid__item spacing-above-35 spacing-below-35" xmlns:th="http://www.thymeleaf.org">
         <h2 th:if="${addressValidated}" th:text="#{address-validation.check-your-address}"></h2>
         <h2 th:unless="${addressValidated}" th:text="#{address-validation.make-sure-your-address-is-correct}"></h2>

@@ -4,6 +4,7 @@ import org.codeforamerica.shiba.application.Application;
 import org.codeforamerica.shiba.application.ApplicationRepository;
 import org.codeforamerica.shiba.output.ApplicationInput;
 import org.codeforamerica.shiba.output.ApplicationInputType;
+import org.codeforamerica.shiba.output.Recipient;
 import org.codeforamerica.shiba.output.applicationinputsmappers.ApplicationInputsMappers;
 import org.codeforamerica.shiba.output.applicationinputsmappers.CoverPageInputsMapper;
 import org.codeforamerica.shiba.pages.data.*;
@@ -20,6 +21,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.codeforamerica.shiba.output.ApplicationInputType.ENUMERATED_SINGLE_VALUE;
@@ -48,19 +51,24 @@ public class PdfIntegrationTest {
             .county(null)
             .timeToComplete(null)
             .build();
+    private final PageData homeAddressPageData = new PageData();
+    private final PageData homeAddressValidationPageData = new PageData();
 
     @BeforeEach
     void setUp() {
         data.setPagesData(pagesData);
-        PageData homeAddress = new PageData();
-        homeAddress.put("zipCode", InputData.builder().value(List.of("")).build());
-        homeAddress.put("city", InputData.builder().value(List.of("")).build());
-        homeAddress.put("state", InputData.builder().value(List.of("")).build());
-        homeAddress.put("streetAddress", InputData.builder().value(List.of("")).build());
-        homeAddress.put("apartmentNumber", InputData.builder().value(List.of("")).build());
-        homeAddress.put("isHomeless", InputData.builder().value(List.of("")).build());
-        homeAddress.put("sameMailingAddress", InputData.builder().value(List.of("")).build());
-        pagesData.put("homeAddress", homeAddress);
+        homeAddressPageData.put("zipCode", InputData.builder().value(List.of("")).build());
+        homeAddressPageData.put("enrichedZipCode", InputData.builder().value(List.of("")).build());
+        homeAddressPageData.put("city", InputData.builder().value(List.of("")).build());
+        homeAddressPageData.put("enrichedCity", InputData.builder().value(List.of("")).build());
+        homeAddressPageData.put("state", InputData.builder().value(List.of("")).build());
+        homeAddressPageData.put("streetAddress", InputData.builder().value(List.of("")).build());
+        homeAddressPageData.put("apartmentNumber", InputData.builder().value(List.of("")).build());
+        homeAddressPageData.put("isHomeless", InputData.builder().value(List.of("")).build());
+        homeAddressPageData.put("sameMailingAddress", InputData.builder().value(List.of("")).build());
+        homeAddressValidationPageData.put("useEnrichedAddress", InputData.builder().value(List.of("")).build());
+        pagesData.putPage("homeAddress", homeAddressPageData);
+        pagesData.putPage("homeAddressValidation", homeAddressValidationPageData);
     }
 
     @Test
@@ -178,5 +186,172 @@ public class PdfIntegrationTest {
         assertThat(applicationInputs).contains(
                 new ApplicationInput("employee", "selfEmployed", List.of("false"), ENUMERATED_SINGLE_VALUE)
         );
+    }
+
+    @Test
+    void shouldMapOriginalAddressIfHomeAddressDoesNotUseEnrichedAddress() {
+        List<String> originalCityValue = List.of("originalCity");
+        List<String> originalZipCodeValue = List.of("originalZipCode");
+        homeAddressPageData.put("city", InputData.builder().value(originalCityValue).build());
+        homeAddressPageData.put("zipCode", InputData.builder().value(originalZipCodeValue).build());
+        homeAddressValidationPageData.put("useEnrichedAddress", InputData.builder().value(List.of("false")).build());
+
+        List<ApplicationInput> applicationInputs = mappers.map(application, CASEWORKER);
+
+        assertThat(applicationInputs).contains(
+                new ApplicationInput(
+                        "homeAddress",
+                        "selectedCity",
+                        originalCityValue,
+                        ApplicationInputType.SINGLE_VALUE
+                ),
+                new ApplicationInput(
+                        "homeAddress",
+                        "selectedZipCode",
+                        originalZipCodeValue,
+                        ApplicationInputType.SINGLE_VALUE
+                )
+        );
+    }
+
+    @Test
+    void shouldMapEnrichedAddressIfHomeAddressUsesEnrichedAddress() {
+        List<String> enrichedCityValue = List.of("testCity");
+        List<String> enrichedZipCodeValue = List.of("testZipCode");
+        homeAddressPageData.put("enrichedCity", InputData.builder().value(enrichedCityValue).build());
+        homeAddressPageData.put("enrichedZipCode", InputData.builder().value(enrichedZipCodeValue).build());
+        homeAddressValidationPageData.put("useEnrichedAddress", InputData.builder().value(List.of("true")).build());
+
+        List<ApplicationInput> applicationInputs = mappers.map(application, CASEWORKER);
+
+        assertThat(applicationInputs).contains(
+                new ApplicationInput(
+                        "homeAddress",
+                        "selectedCity",
+                        enrichedCityValue,
+                        ApplicationInputType.SINGLE_VALUE
+                ),
+                new ApplicationInput(
+                        "homeAddress",
+                        "selectedZipCode",
+                        enrichedZipCodeValue,
+                        ApplicationInputType.SINGLE_VALUE
+                )
+        );
+    }
+
+    @Test
+    void shouldMapHomeAddressToMailingAddressIfSameMailingAddressIsTrue() {
+        homeAddressPageData.putAll(Map.of(
+                "zipCode", InputData.builder().value(List.of("someZipCode")).build(),
+                "city", InputData.builder().value(List.of("someCity")).build(),
+                "state", InputData.builder().value(List.of("someState")).build(),
+                "streetAddress", InputData.builder().value(List.of("someStreetAddress")).build(),
+                "apartmentNumber", InputData.builder().value(List.of("someApartmentNumber")).build(),
+                "sameMailingAddress", InputData.builder().value(List.of("true")).build()
+        ));
+
+        List<ApplicationInput> applicationInputs = mappers.map(application, CASEWORKER);
+
+        assertThat(applicationInputs).contains(
+                new ApplicationInput(
+                        "mailingAddress",
+                        "selectedZipCode",
+                        List.of("someZipCode"),
+                        ApplicationInputType.SINGLE_VALUE
+                ),
+                new ApplicationInput(
+                        "mailingAddress",
+                        "selectedCity",
+                        List.of("someCity"),
+                        ApplicationInputType.SINGLE_VALUE
+                ),
+                new ApplicationInput(
+                        "mailingAddress",
+                        "selectedState",
+                        List.of("someState"),
+                        ApplicationInputType.SINGLE_VALUE
+                ),
+                new ApplicationInput(
+                        "mailingAddress",
+                        "selectedStreetAddress",
+                        List.of("someStreetAddress"),
+                        ApplicationInputType.SINGLE_VALUE
+                ),
+                new ApplicationInput(
+                        "mailingAddress",
+                        "selectedApartmentNumber",
+                        List.of("someApartmentNumber"),
+                        ApplicationInputType.SINGLE_VALUE
+                )
+        );
+    }
+
+    @Test
+    void shouldMapOriginalHomeAddressToMailingAddressIfSameMailingAddressIsTrueAndUseEnrichedAddressIsTrue() {
+        homeAddressPageData.putAll(Map.of(
+                "enrichedZipCode", InputData.builder().value(List.of("someZipCode")).build(),
+                "enrichedCity", InputData.builder().value(List.of("someCity")).build(),
+                "enrichedState", InputData.builder().value(List.of("someState")).build(),
+                "enrichedStreetAddress", InputData.builder().value(List.of("someStreetAddress")).build(),
+//                TODO: Is apartment number something that we get back from smarty streets?
+                "enrichedApartmentNumber", InputData.builder().value(List.of("someApartmentNumber")).build(),
+                "sameMailingAddress", InputData.builder().value(List.of("true")).build()
+        ));
+        homeAddressValidationPageData.put("useEnrichedAddress", InputData.builder().value(List.of("true")).build());
+
+        List<ApplicationInput> applicationInputs = mappers.map(application, CASEWORKER);
+
+        assertThat(applicationInputs).contains(
+                new ApplicationInput(
+                        "mailingAddress",
+                        "selectedZipCode",
+                        List.of("someZipCode"),
+                        ApplicationInputType.SINGLE_VALUE
+                ),
+                new ApplicationInput(
+                        "mailingAddress",
+                        "selectedCity",
+                        List.of("someCity"),
+                        ApplicationInputType.SINGLE_VALUE
+                ),
+                new ApplicationInput(
+                        "mailingAddress",
+                        "selectedState",
+                        List.of("someState"),
+                        ApplicationInputType.SINGLE_VALUE
+                ),
+                new ApplicationInput(
+                        "mailingAddress",
+                        "selectedStreetAddress",
+                        List.of("someStreetAddress"),
+                        ApplicationInputType.SINGLE_VALUE
+                ),
+                new ApplicationInput(
+                        "mailingAddress",
+                        "selectedApartmentNumber",
+                        List.of("someApartmentNumber"),
+                        ApplicationInputType.SINGLE_VALUE
+                )
+        );
+    }
+
+    @Test
+    void shouldNotMapHomeAddressToMailingAddressIfSameMailingAddressIsFalse() {
+        homeAddressPageData.putAll(Map.of(
+                "zipCode", InputData.builder().value(List.of("someZipCode")).build(),
+                "city", InputData.builder().value(List.of("someCity")).build(),
+                "state", InputData.builder().value(List.of("someState")).build(),
+                "streetAddress", InputData.builder().value(List.of("someStreetAddress")).build(),
+                "apartmentNumber", InputData.builder().value(List.of("someApartmentNumber")).build(),
+                "sameMailingAddress", InputData.builder().value(List.of("false")).build()
+        ));
+
+        List<String> inputGroupNames = mappers.map(application, CASEWORKER)
+                .stream()
+                .map(ApplicationInput::getGroupName)
+                .collect(Collectors.toList());
+
+        assertThat(inputGroupNames).doesNotContain("mailingAddress");
     }
 }
