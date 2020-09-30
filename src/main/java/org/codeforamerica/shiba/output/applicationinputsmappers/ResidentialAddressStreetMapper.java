@@ -28,7 +28,7 @@ public class ResidentialAddressStreetMapper implements ApplicationInputsMapper {
         return List.of(new ApplicationInput(
                 "homeAddress",
                 "streetAddressWithPermanentAddress",
-                List.of(streetAddressInput.getValue().get(0) + notPermanentAddressIndicator),
+                List.of(streetAddressInput.getValue(0) + notPermanentAddressIndicator),
                 ApplicationInputType.SINGLE_VALUE
         ));
     }
