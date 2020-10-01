@@ -24,43 +24,38 @@ public class ResearchDataParser {
 
     public ResearchData parse(ApplicationData applicationData) {
         PagesData pagesData = applicationData.getPagesData();
-        PageData languagePreferences = pagesData.getPage("languagePreferences");
-        Optional<PageData> languagePreferencesOptional = Optional.ofNullable(languagePreferences);
-        PageData personalInfo = pagesData.getPage("personalInfo");
-        Optional<PageData> personalInfoOptional = Optional.ofNullable(personalInfo);
-        PageData contactInfo = pagesData.getPage("contactInfo");
-        Optional<PageData> contactInfoOptional = Optional.ofNullable(contactInfo);
-        PageData homeAddress = pagesData.getPage("homeAddress");
-        Optional<PageData> homeAddressOptional = Optional.ofNullable(homeAddress);
-        PageData programs = pagesData.getPage("choosePrograms");
-        Optional<PageData> programsOptional = Optional.ofNullable(programs);
-        String homeExpensesAmount = pagesData.getPage("homeExpensesAmount").get("homeExpensesAmount").getValue(0);
-        String currentlyWorking = pagesData.getPage("employmentStatus").get("areYouWorking").getValue(0);
+        Optional<PageData> languagePreferencesOptional = Optional.ofNullable(pagesData.getPage("languagePreferences"));
+        Optional<PageData> personalInfoOptional = Optional.ofNullable(pagesData.getPage("personalInfo"));
+        Optional<PageData> contactInfoOptional = Optional.ofNullable(pagesData.getPage("contactInfo"));
+        Optional<PageData> homeAddressOptional = Optional.ofNullable(pagesData.getPage("homeAddress"));
+        Optional<PageData> homeExpensesAmountOptional = Optional.ofNullable(pagesData.getPage("homeExpensesAmount"));
+        Optional<PageData> currentlyWorkingOptional = Optional.ofNullable(pagesData.getPage("employmentStatus"));
         TotalIncome totalIncome = totalIncomeParser.parse(applicationData);
-        List<String> chosenPrograms = programs.get("programs").getValue();
+        List<String> chosenPrograms = pagesData.getPage("choosePrograms").get("programs").getValue();
+        Optional<PageData> programsOptional = Optional.ofNullable(pagesData.getPage("choosePrograms"));
 
 
         return ResearchData.builder()
                 .spokenLanguage(languagePreferencesOptional.map(languagePrefs -> languagePrefs.get("spokenLanguage").getValue(0)).orElse(null))
-                .writtenLanguage(languagePreferences.get("writtenLanguage").getValue(0))
+                .writtenLanguage(languagePreferencesOptional.map(languagePreferences -> languagePreferences.get("writtenLanguage").getValue(0)).orElse(null))
                 .sex(personalInfoOptional.map(pInfo -> pInfo.get("sex").getValue(0)).orElse(null))
                 .firstName(personalInfoOptional.map(pInfo -> pInfo.get("firstName").getValue(0)).orElse(null))
                 .lastName(personalInfoOptional.map(pInfo -> pInfo.get("lastName").getValue(0)).orElse(null))
                 .dateOfBirth(personalInfoOptional.map(pInfo -> Date.valueOf(pInfo.get("dateOfBirth").getValue(0))).orElse(null))
                 .enteredSsn(!String.join("", personalInfoOptional.map(pInfo -> pInfo.get("ssn").getValue()).orElse(List.of(""))).isBlank())
-                .phoneNumber(contactInfo.get("phoneNumber").getValue(0))
-                .email(contactInfo.get("email").getValue(0))
-                .phoneOptIn(contactInfo.get("phoneOrEmail").getValue().contains("TEXT"))
-                .emailOptIn(contactInfo.get("phoneOrEmail").getValue().contains("EMAIL"))
-                .zipCode(homeAddress.get("zipCode").getValue(0))
-                .snap(chosenPrograms.contains("SNAP"))
-                .cash(chosenPrograms.contains("CASH"))
-                .housing(chosenPrograms.contains("GRH"))
-                .emergency(chosenPrograms.contains("EA"))
+                .phoneNumber(contactInfoOptional.map(contactInformation -> contactInformation.get("phoneNumber").getValue(0)).orElse(null))
+                .email(contactInfoOptional.map(contactInformation -> contactInformation.get("email").getValue(0)).orElse(null))
+                .phoneOptIn(contactInfoOptional.map(contactInformation -> contactInformation.get("phoneOrEmail").getValue().contains("TEXT")).orElse(null))
+                .emailOptIn(contactInfoOptional.map(contactInformation -> contactInformation.get("phoneOrEmail").getValue().contains("EMAIL")).orElse(null))
+                .zipCode(homeAddressOptional.map(homeAddr -> homeAddr.get("zipCode").getValue(0)).orElse(null))
+                .snap(chosenProgramsOptional.map(chosenPrograms -> chosenPrograms.contains("SNAP")).orElse(null))
+                .cash(chosenProgramsOptional.map(chosenPrograms -> chosenPrograms.contains("CASH")).orElse(null))
+                .housing(chosenProgramsOptional.map(chosenPrograms -> chosenPrograms.contains("GRH")).orElse(null))
+                .emergency(chosenProgramsOptional.map(chosenPrograms -> chosenPrograms.contains("EA")).orElse(null))
                 .liveAlone(pagesData.get("doYouLiveAlone").get("liveAlone").getValue(0).contains("true"))
                 .moneyMadeLast30Days(totalIncomeCalculator.calculate(totalIncome))
-                .homeExpensesAmount(Double.valueOf(homeExpensesAmount))
-                .areYouWorking(Boolean.valueOf(currentlyWorking))
+                .homeExpensesAmount(Double.valueOf(homeExpensesAmountOptional.map(homeExpsAmount -> homeExpsAmount.get("homeExpensesAmount").getValue(0)).orElse(null)))
+                .areYouWorking(Boolean.valueOf(currentlyWorkingOptional.map(currentlyWrking -> currentlyWrking.get("areYouWorking").getValue(0)).orElse(null)))
                 .build();
     }
 }
