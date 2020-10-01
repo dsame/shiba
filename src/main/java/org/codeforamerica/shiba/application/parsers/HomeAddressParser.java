@@ -21,7 +21,8 @@ public class HomeAddressParser extends ApplicationDataParser<Address> {
                 applicationData.getValue(coordinates.get("street")),
                 applicationData.getValue(coordinates.get("city")),
                 applicationData.getValue(coordinates.get("state")),
-                applicationData.getValue(coordinates.get("zipcode"))
+                applicationData.getValue(coordinates.get("zipcode")),
+                applicationData.getValue(coordinates.get("apartmentNumber"))
         );
     }
 }

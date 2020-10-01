@@ -1289,6 +1289,7 @@ shiba-configuration:
         value: "true"
       datasources:
         - pageName: mailingAddress
+        - pageName: homeAddress
       nextPages:
         - pageName: reviewInfo
     reviewInfo:

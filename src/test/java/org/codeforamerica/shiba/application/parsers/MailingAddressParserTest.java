@@ -48,15 +48,17 @@ class MailingAddressParserTest {
         String city = "city address";
         String state = "state address";
         String zipcode = "zipcode address";
+        String apartment = "addressLine5";
         homePageData.put("addressLine1", InputData.builder().value(List.of(street)).build());
         homePageData.put("addressLine2", InputData.builder().value(List.of(city)).build());
         homePageData.put("addressLine3", InputData.builder().value(List.of(state)).build());
         homePageData.put("addressLine4", InputData.builder().value(List.of(zipcode)).build());
+        homePageData.put("addressLine5", InputData.builder().value(List.of(apartment)).build());
         pagesData.put("mailingAddressPageName", homePageData);
         applicationData.setPagesData(pagesData);
 
         Address address = mailingAddressParser.parse(applicationData);
 
-        assertThat(address).isEqualTo(new Address(street, city, state, zipcode));
+        assertThat(address).isEqualTo(new Address(street, city, state, zipcode, apartment));
     }
 }

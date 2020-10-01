@@ -51,7 +51,7 @@ public class UserJourneyPageTest extends AbstractBasePageTest {
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
         when(smartyStreetClient.getCounty(any())).thenReturn(Optional.empty());
         when(smartyStreetClient.validateAddress(any())).thenReturn(
-                Optional.of(new Address("smarty street", "City", "CA", "03104"))
+                Optional.of(new Address("smarty street", "City", "CA", "03104", null))
         );
     }
 

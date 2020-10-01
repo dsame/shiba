@@ -21,4 +21,8 @@ public class Components {
     String zipcode;
     @JsonProperty("plus4_code")
     String plus4Code;
+    @JsonProperty("secondary_designator")
+    String secondaryDesignator;
+    @JsonProperty("secondary_number")
+    String secondaryNumber;
 }

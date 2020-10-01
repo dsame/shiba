@@ -53,6 +53,9 @@ parsing:
       zipcode:
         pageName: homeAddress
         inputName: zipCode
+      apartmentNumber:
+        pageName: homeAddress
+        inputName: apartmentNumber
   mailingAddress:
     pageInputs:
       street:
@@ -67,3 +70,6 @@ parsing:
       zipcode:
         pageName: mailingAddress
         inputName: zipCode
+      apartmentNumber:
+        pageName: mailingAddress
+        inputName: apartmentNumber

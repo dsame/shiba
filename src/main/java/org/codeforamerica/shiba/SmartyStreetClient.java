@@ -55,6 +55,7 @@ public class SmartyStreetClient implements LocationClient {
                         .queryParam("city", address.getCity())
                         .queryParam("state", address.getState())
                         .queryParam("zipcode", address.getZipcode())
+                        .queryParam("secondary", address.getApartmentNumber())
                         .queryParam("candidates", 1).build())
                 .retrieve()
                 .bodyToMono(SmartyStreetVerifyStreetResponse.class)
@@ -71,7 +72,8 @@ public class SmartyStreetClient implements LocationClient {
                             ),
                             components.getCityName(),
                             components.getStateAbbreviation(),
-                            components.getZipcode() + "-" + components.getPlus4Code()
+                            components.getZipcode() + "-" + components.getPlus4Code(),
+                            components.getSecondaryDesignator() + " " + components.getSecondaryNumber()
                     );
                 });
     }

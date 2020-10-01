@@ -25,7 +25,7 @@ class AddressEnrichmentTest {
     void shouldCallAddressValidationOnAddressValidationPage() {
         ApplicationData applicationData = new ApplicationData();
         applicationData.setPagesData(new PagesData());
-        Address address = new Address("street", "city", "CA", "02103");
+        Address address = new Address("street", "city", "CA", "02103", "ste 123");
         when(homeAddressParser.parse(applicationData)).thenReturn(address);
         when(locationClient.validateAddress(address)).thenReturn(Optional.of(address));
 
@@ -35,13 +35,14 @@ class AddressEnrichmentTest {
         assertThat(enrichmentResult).containsEntry("enrichedCity", new InputData(List.of(address.getCity())));
         assertThat(enrichmentResult).containsEntry("enrichedState", new InputData(List.of(address.getState())));
         assertThat(enrichmentResult).containsEntry("enrichedZipCode", new InputData(List.of(address.getZipcode())));
+        assertThat(enrichmentResult).containsEntry("enrichedApartmentNumber", new InputData(List.of(address.getApartmentNumber())));
     }
 
     @Test
     void shouldNotIncludeValidatedAddress_whenLocationClientDoesNotReturnAnAddress() {
         ApplicationData applicationData = new ApplicationData();
         applicationData.setPagesData(new PagesData());
-        Address address = new Address("street", "city", "CA", "02103");
+        Address address = new Address("street", "city", "CA", "02103", "");
         when(homeAddressParser.parse(applicationData)).thenReturn(address);
         when(locationClient.validateAddress(address)).thenReturn(empty());
 

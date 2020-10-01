@@ -52,6 +52,9 @@ test-parsing:
       zipcode:
         pageName: homeAddressPageName
         inputName: addressLine4
+      apartmentNumber:
+        pageName: homeAddressPageName
+        inputName: addressLine5
   mailingAddress:
     pageInputs:
       street:
@@ -66,3 +69,6 @@ test-parsing:
       zipcode:
         pageName: mailingAddressPageName
         inputName: addressLine4
+      apartmentNumber:
+        pageName: mailingAddressPageName
+        inputName: addressLine5

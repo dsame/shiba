@@ -20,7 +20,8 @@ public abstract class AddressEnrichment implements Enrichment {
                         "enrichedStreetAddress", new InputData(List.of(address.getStreet())),
                         "enrichedCity", new InputData(List.of(address.getCity())),
                         "enrichedState", new InputData(List.of(address.getState())),
-                        "enrichedZipCode", new InputData(List.of(address.getZipcode()))
+                        "enrichedZipCode", new InputData(List.of(address.getZipcode())),
+                        "enrichedApartmentNumber", new InputData(List.of(address.getApartmentNumber()))
                 ))
                 .map(EnrichmentResult::new)
                 .orElse(new EnrichmentResult());

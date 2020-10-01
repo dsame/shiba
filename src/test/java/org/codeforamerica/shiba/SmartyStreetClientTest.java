@@ -63,7 +63,7 @@ class SmartyStreetClientTest {
         String city = "Scranton";
         String state = "PA";
         String zipcode = "91402";
-        Address address = new Address(street, city, state, zipcode);
+        Address address = new Address(street, city, state, zipcode, null);
         wireMockServer.stubFor(get(anyUrl())
                 .willReturn(okJson("[{\"metadata\": {\"county_name\": \"Cook\"}}]"))
         );
@@ -92,7 +92,7 @@ class SmartyStreetClientTest {
         String city = "Scranton";
         String state = "PA";
         String zipcode = "91402";
-        Address address = new Address(street, city, state, zipcode);
+        Address address = new Address(street, city, state, zipcode, null);
         wireMockServer.stubFor(get(anyUrl()).willReturn(okJson("[]")));
 
         Optional<String> county = smartyStreetClient.getCounty(address);
@@ -109,7 +109,7 @@ class SmartyStreetClientTest {
         String city = "Scranton";
         String state = "PA";
         String zipcode = "91402";
-        Address address = new Address(street, city, state, zipcode);
+        Address address = new Address(street, city, state, zipcode, null);
         wireMockServer.stubFor(get(anyUrl()).willReturn(status(200)));
 
         Optional<String> county = smartyStreetClient.getCounty(address);
@@ -123,7 +123,7 @@ class SmartyStreetClientTest {
         String city = "Scranton";
         String state = "PA";
         String zipcode = "91402";
-        Address address = new Address(street, city, state, zipcode);
+        Address address = new Address(street, city, state, zipcode, null);
         wireMockServer.stubFor(get(anyUrl()).willReturn(status(400)));
 
         Optional<String> county = smartyStreetClient.getCounty(address);
@@ -140,23 +140,25 @@ class SmartyStreetClientTest {
         String city = "Scranton";
         String state = "PA";
         String zipcode = "91402";
-        Address address = new Address(street, city, state, zipcode);
+        String apartmentNumber = "apt 1104";
+        Address address = new Address(street, city, state, zipcode, apartmentNumber);
         wireMockServer.stubFor(get(anyUrl())
-                .willReturn(okJson("[" +
-                        "  {" +
-                        "    \"components\": {" +
-                        "      \"primary_number\": \"222\"," +
-                        "      \"street_name\": \"Merchandise Mart\"," +
-                        "      \"street_suffix\": \"Plz\"," +
-                        "      \"city_name\": \"Chicago\"," +
-                        "      \"default_city_name\": \"Chicago\"," +
-                        "      \"state_abbreviation\": \"IL\"," +
-                        "      \"zipcode\": \"60654\"," +
-                        "      \"plus4_code\": \"1103\"" +
-                        "    }" +
-                        "  }" +
-                        "]"))
-        );
+                .willReturn(okJson("[\n" +
+                        "  {\n" +
+                        "    \"components\": {\n" +
+                        "      \"primary_number\": \"222\",\n" +
+                        "      \"street_name\": \"Merchandise Mart\",\n" +
+                        "      \"street_suffix\": \"Plz\",\n" +
+                        "      \"city_name\": \"Chicago\",\n" +
+                        "      \"default_city_name\": \"Chicago\",\n" +
+                        "      \"state_abbreviation\": \"IL\",\n" +
+                        "      \"zipcode\": \"60654\",\n" +
+                        "      \"plus4_code\": \"1103\",\n" +
+                        "      \"secondary_number\": \"1104\",\n" +
+                        "      \"secondary_designator\": \"apt\"\n" +
+                        "    }\n" +
+                        "  }\n" +
+                        "]")));
 
         Address resultAddress = smartyStreetClient.validateAddress(address).get();
 
@@ -168,8 +170,9 @@ class SmartyStreetClientTest {
                 .withQueryParam("state", equalTo(state))
                 .withQueryParam("zipcode", equalTo(zipcode))
                 .withQueryParam("candidates", equalTo("1"))
+                .withQueryParam("secondary", equalTo(apartmentNumber))
         );
 
-        assertThat(resultAddress).isEqualTo(new Address("222 Merchandise Mart Plz", "Chicago", "IL", "60654-1103"));
+        assertThat(resultAddress).isEqualTo(new Address("222 Merchandise Mart Plz", "Chicago", "IL", "60654-1103", "apt 1104"));
     }
 }
