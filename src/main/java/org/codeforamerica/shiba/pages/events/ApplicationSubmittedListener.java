@@ -91,7 +91,7 @@ public class ApplicationSubmittedListener {
         String applicationId = application.getId();
         ApplicationFile pdf = pdfGenerator.generate(applicationId, CASEWORKER);
 
-        String fullName = String.join(" ", personalInfo.get("firstName").getValue().get(0), personalInfo.get("lastName").getValue().get(0));
+        String fullName = String.join(" ", personalInfo.get("firstName").getValue(0), personalInfo.get("lastName").getValue(0));
         emailClient.sendCaseWorkerEmail(countyMap.get(application.getCounty()).getEmail(), fullName, applicationId, pdf);
     }
 

@@ -77,3 +77,4 @@ test-parsing:
       email:
         pageName: contactInfoPageName
         inputName: contactEmail
+  researchData:

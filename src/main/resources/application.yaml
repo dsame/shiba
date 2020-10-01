@@ -30,3 +30,8 @@ encryption-key: ${ENCRYPTION_KEY}
 logging:
   level:
     org.apache.pdfbox.multipdf: off
+
+server:
+  servlet:
+    session:
+      timeout: 30s
