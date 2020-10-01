@@ -7,6 +7,7 @@ import org.springframework.mock.web.MockHttpSession;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 class SessionListenerTest {
@@ -29,4 +30,8 @@ class SessionListenerTest {
         verify(researchDataRepository).save(researchData);
     }
 
+    @Test
+    void shouldNotSaveResearchDataWhenTheDataIsBlank() {
+        assertThat(false).isTrue();
+    }
 }
