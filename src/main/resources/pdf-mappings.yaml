@@ -27,9 +27,9 @@ caf:
     homeAddress:
       selectedZipCode: APPLICANT_HOME_ZIPCODE
       selectedCity: APPLICANT_HOME_CITY
-      state: APPLICANT_HOME_STATE
+      selectedState: APPLICANT_HOME_STATE
+      selectedApartmentNumber: APPLICANT_HOME_APT_NUMBER
       streetAddressWithPermanentAddress: APPLICANT_HOME_STREET_ADDRESS
-      apartmentNumber: APPLICANT_HOME_APT_NUMBER
       isHomelessIndicator: APPLICANT_HOMELESS
     mailingAddress:
       selectedZipCode: APPLICANT_MAILING_ZIPCODE

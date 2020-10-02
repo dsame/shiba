@@ -63,6 +63,9 @@
         "headerKey": {
           "$ref": "#/definitions/value"
         },
+        "hasPrimaryButton": {
+          "type": "boolean"
+        },
         "headerHelpMessageKey": {
           "type": "string"
         },

@@ -1187,6 +1187,7 @@ shiba-configuration:
       name: homeAddressValidation
       pageTitle:
         value: address-validation.title
+      hasPrimaryButton: false
       inputs:
         - name: useEnrichedAddress
           type: CUSTOM
@@ -1200,6 +1201,7 @@ shiba-configuration:
       name: mailingAddressValidation
       pageTitle:
         value: address-validation.title
+      hasPrimaryButton: false
       inputs:
         - name: useEnrichedAddress
           type: CUSTOM
@@ -1264,12 +1266,12 @@ shiba-configuration:
       nextPages:
         - pageName: verifyHomeAddress
     verifyHomeAddress:
-#      TODO: Probably need a skip condition here if homeless and no address entered
       pageConfiguration: *homeAddressValidation
       datasources:
         - pageName: homeAddress
       nextPages:
         - pageName: mailingAddress
+        - pageName: homeAddress
     mailingAddress:
       pageConfiguration: *mailingAddress
       enrichment: mailingAddressEnrichment
@@ -1292,6 +1294,7 @@ shiba-configuration:
         - pageName: homeAddress
       nextPages:
         - pageName: reviewInfo
+        - pageName: mailingAddress
     reviewInfo:
       pageConfiguration: *reviewInfo
       nextPages:
@@ -1301,7 +1304,9 @@ shiba-configuration:
       datasources:
         - pageName: personalInfo
         - pageName: homeAddress
+        - pageName: homeAddressValidation
         - pageName: mailingAddress
+        - pageName: mailingAddressValidation
         - pageName: contactInfo
     doYouLiveAlone:
       pageConfiguration: *doYouLiveAlone

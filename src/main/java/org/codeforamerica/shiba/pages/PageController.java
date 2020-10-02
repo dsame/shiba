@@ -1,5 +1,6 @@
 package org.codeforamerica.shiba.pages;
 
+import org.apache.commons.lang3.StringUtils;
 import org.codeforamerica.shiba.ApplicationEnrichment;
 import org.codeforamerica.shiba.ConfirmationData;
 import org.codeforamerica.shiba.application.Application;
@@ -79,7 +80,6 @@ public class PageController {
             @PathVariable String pageName,
             @RequestParam(required = false, defaultValue = "0") Integer option
     ) {
-//        TODO: Does not work for multiple skips
         PageWorkflowConfiguration pageWorkflow = this.applicationConfiguration.getPageWorkflow(pageName);
         PagesData pagesData = this.applicationData.getPagesData();
         NextPage nextPage = applicationData.getNextPageName(pageWorkflow, option);
@@ -88,7 +88,7 @@ public class PageController {
 
         if (pagesData.shouldSkip(nextPageWorkflow)) {
             pagesData.remove(nextPageWorkflow.getPageConfiguration().getName());
-            return new RedirectView(String.format("/pages/%s", applicationData.getNextPageName(nextPageWorkflow, option).getPageName()));
+            return new RedirectView(String.format("/pages/%s/navigation", nextPage.getPageName()));
         } else {
             return new RedirectView(String.format("/pages/%s", nextPage.getPageName()));
         }

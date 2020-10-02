@@ -493,29 +493,6 @@ derived-values:
             - pageName: mailingAddressValidation
               input: useEnrichedAddress
               value: "true"
-  - groupName: homeAddress
-    fieldName: selectedApartmentNumber
-    values:
-      - value: !!org.codeforamerica.shiba.output.ReferenceDerivedValueConfiguration
-          pageName: homeAddress
-          inputName: enrichedApartmentNumber
-        type: SINGLE_VALUE
-        condition:
-          logicalOperator: OR
-          conditions:
-            - pageName: homeAddressValidation
-              input: useEnrichedAddress
-              value: "true"
-      - type: SINGLE_VALUE
-        value: !!org.codeforamerica.shiba.output.ReferenceDerivedValueConfiguration
-          pageName: homeAddress
-          inputName: apartmentNumber
-        condition:
-          logicalOperator: OR
-          conditions:
-            - pageName: homeAddressValidation
-              input: useEnrichedAddress
-              value: "false"
   - fieldName: noSocialSecurity
     groupName: unearnedIncome
     values:
@@ -750,18 +727,6 @@ derived-values:
             - pageName: registerToVote
               input: registerToVote
               value: "NO"
-  - groupName: homeAddress
-    fieldName: isHomelessIndicator
-    values:
-      - type: SINGLE_VALUE
-        value: !!org.codeforamerica.shiba.output.LiteralDerivedValueConfiguration
-          literal: "homeless"
-        condition:
-          logicalOperator: OR
-          conditions:
-            - pageName: homeAddress
-              input: isHomeless
-              value: "true"
   - groupName: employee
     fieldName: firstName
     iteration: 0
@@ -1026,6 +991,41 @@ derived-values:
               subworkflow: jobs
               iteration: 3
   - groupName: homeAddress
+    fieldName: isHomelessIndicator
+    values:
+      - type: SINGLE_VALUE
+        value: !!org.codeforamerica.shiba.output.LiteralDerivedValueConfiguration
+          literal: "homeless"
+        condition:
+          logicalOperator: OR
+          conditions:
+            - pageName: homeAddress
+              input: isHomeless
+              value: "true"
+  - groupName: homeAddress
+    fieldName: selectedApartmentNumber
+    values:
+      - value: !!org.codeforamerica.shiba.output.ReferenceDerivedValueConfiguration
+          pageName: homeAddress
+          inputName: enrichedApartmentNumber
+        type: SINGLE_VALUE
+        condition:
+          logicalOperator: OR
+          conditions:
+            - pageName: homeAddressValidation
+              input: useEnrichedAddress
+              value: "true"
+      - type: SINGLE_VALUE
+        value: !!org.codeforamerica.shiba.output.ReferenceDerivedValueConfiguration
+          pageName: homeAddress
+          inputName: apartmentNumber
+        condition:
+          logicalOperator: OR
+          conditions:
+            - pageName: homeAddressValidation
+              input: useEnrichedAddress
+              value: "false"
+  - groupName: homeAddress
     fieldName: selectedCity
     values:
       - type: SINGLE_VALUE
@@ -1042,6 +1042,29 @@ derived-values:
         value: !!org.codeforamerica.shiba.output.ReferenceDerivedValueConfiguration
           pageName: homeAddress
           inputName: city
+        condition:
+          logicalOperator: OR
+          conditions:
+            - pageName: homeAddressValidation
+              input: useEnrichedAddress
+              value: "false"
+  - groupName: homeAddress
+    fieldName: selectedState
+    values:
+      - type: SINGLE_VALUE
+        value: !!org.codeforamerica.shiba.output.ReferenceDerivedValueConfiguration
+          pageName: homeAddress
+          inputName: enrichedState
+        condition:
+          logicalOperator: OR
+          conditions:
+            - pageName: homeAddressValidation
+              input: useEnrichedAddress
+              value: "true"
+      - type: SINGLE_VALUE
+        value: !!org.codeforamerica.shiba.output.ReferenceDerivedValueConfiguration
+          pageName: homeAddress
+          inputName: state
         condition:
           logicalOperator: OR
           conditions:

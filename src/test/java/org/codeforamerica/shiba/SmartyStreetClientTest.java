@@ -175,4 +175,46 @@ class SmartyStreetClientTest {
 
         assertThat(resultAddress).isEqualTo(new Address("222 Merchandise Mart Plz", "Chicago", "IL", "60654-1103", "apt 1104"));
     }
+
+    @Test
+    void returnAddressWithoutSecondary_whenVerifyAddressFindsCandidate() {
+        ApplicationData applicationData = new ApplicationData();
+        applicationData.setPagesData(new PagesData(Map.of("something", new PageData())));
+
+        String street = "1725 Slough Avenue";
+        String city = "Scranton";
+        String state = "PA";
+        String zipcode = "91402";
+        Address address = new Address(street, city, state, zipcode, null);
+        wireMockServer.stubFor(get(anyUrl())
+                .willReturn(okJson("[\n" +
+                        "  {\n" +
+                        "    \"components\": {\n" +
+                        "      \"primary_number\": \"222\",\n" +
+                        "      \"street_name\": \"Merchandise Mart\",\n" +
+                        "      \"street_suffix\": \"Plz\",\n" +
+                        "      \"city_name\": \"Chicago\",\n" +
+                        "      \"default_city_name\": \"Chicago\",\n" +
+                        "      \"state_abbreviation\": \"IL\",\n" +
+                        "      \"zipcode\": \"60654\",\n" +
+                        "      \"plus4_code\": \"1103\"\n" +
+                        "    }\n" +
+                        "  }\n" +
+                        "]")));
+
+        Address resultAddress = smartyStreetClient.validateAddress(address).get();
+
+        wireMockServer.verify(getRequestedFor(urlPathEqualTo("/"))
+                .withQueryParam("auth-id", equalTo(authId))
+                .withQueryParam("auth-token", equalTo(authToken))
+                .withQueryParam("street", equalTo(street))
+                .withQueryParam("city", equalTo(city))
+                .withQueryParam("state", equalTo(state))
+                .withQueryParam("zipcode", equalTo(zipcode))
+                .withQueryParam("candidates", equalTo("1"))
+                .withQueryParam("secondary", equalTo(""))
+        );
+
+        assertThat(resultAddress).isEqualTo(new Address("222 Merchandise Mart Plz", "Chicago", "IL", "60654-1103", ""));
+    }
 }

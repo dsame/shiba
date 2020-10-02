@@ -8,6 +8,7 @@ import org.codeforamerica.shiba.output.Recipient;
 import org.codeforamerica.shiba.output.applicationinputsmappers.ApplicationInputsMappers;
 import org.codeforamerica.shiba.output.applicationinputsmappers.CoverPageInputsMapper;
 import org.codeforamerica.shiba.pages.data.*;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -206,8 +207,13 @@ public class PdfIntegrationTest {
     void shouldMapOriginalAddressIfHomeAddressDoesNotUseEnrichedAddress() {
         List<String> originalCityValue = List.of("originalCity");
         List<String> originalZipCodeValue = List.of("originalZipCode");
-        homeAddressPageData.put("city", InputData.builder().value(originalCityValue).build());
-        homeAddressPageData.put("zipCode", InputData.builder().value(originalZipCodeValue).build());
+        List<String> originalApartmentNumber = List.of("originalApt");
+        List<String> originalState = List.of("originalState");
+        homeAddressPageData.putAll(Map.of(
+                "city", InputData.builder().value(originalCityValue).build(),
+                "zipCode", InputData.builder().value(originalZipCodeValue).build(),
+                "apartmentNumber", InputData.builder().value(originalApartmentNumber).build(),
+                "state", InputData.builder().value(originalState).build()));
         homeAddressValidationPageData.put("useEnrichedAddress", InputData.builder().value(List.of("false")).build());
 
         List<ApplicationInput> applicationInputs = mappers.map(application, CASEWORKER);
@@ -224,6 +230,18 @@ public class PdfIntegrationTest {
                         "selectedZipCode",
                         originalZipCodeValue,
                         ApplicationInputType.SINGLE_VALUE
+                ),
+                new ApplicationInput(
+                        "homeAddress",
+                        "selectedApartmentNumber",
+                        originalApartmentNumber,
+                        ApplicationInputType.SINGLE_VALUE
+                ),
+                new ApplicationInput(
+                        "homeAddress",
+                        "selectedState",
+                        originalState,
+                        ApplicationInputType.SINGLE_VALUE
                 )
         );
     }
@@ -232,8 +250,13 @@ public class PdfIntegrationTest {
     void shouldMapEnrichedAddressIfHomeAddressUsesEnrichedAddress() {
         List<String> enrichedCityValue = List.of("testCity");
         List<String> enrichedZipCodeValue = List.of("testZipCode");
-        homeAddressPageData.put("enrichedCity", InputData.builder().value(enrichedCityValue).build());
-        homeAddressPageData.put("enrichedZipCode", InputData.builder().value(enrichedZipCodeValue).build());
+        List<String> enrichedApartmentNumber = List.of("someApt");
+        List<String> enrichedState = List.of("someState");
+        homeAddressPageData.putAll(Map.of(
+                "enrichedCity", InputData.builder().value(enrichedCityValue).build(),
+                "enrichedZipCode", InputData.builder().value(enrichedZipCodeValue).build(),
+                "enrichedApartmentNumber", InputData.builder().value(enrichedApartmentNumber).build(),
+                "enrichedState", InputData.builder().value(enrichedState).build()));
         homeAddressValidationPageData.put("useEnrichedAddress", InputData.builder().value(List.of("true")).build());
 
         List<ApplicationInput> applicationInputs = mappers.map(application, CASEWORKER);
@@ -249,6 +272,18 @@ public class PdfIntegrationTest {
                         "homeAddress",
                         "selectedZipCode",
                         enrichedZipCodeValue,
+                        ApplicationInputType.SINGLE_VALUE
+                ),
+                new ApplicationInput(
+                        "homeAddress",
+                        "selectedApartmentNumber",
+                        enrichedApartmentNumber,
+                        ApplicationInputType.SINGLE_VALUE
+                ),
+                new ApplicationInput(
+                        "homeAddress",
+                        "selectedState",
+                        enrichedState,
                         ApplicationInputType.SINGLE_VALUE
                 )
         );
@@ -310,7 +345,6 @@ public class PdfIntegrationTest {
                 "enrichedCity", InputData.builder().value(List.of("someCity")).build(),
                 "enrichedState", InputData.builder().value(List.of("someState")).build(),
                 "enrichedStreetAddress", InputData.builder().value(List.of("someStreetAddress")).build(),
-//                TODO: Is apartment number something that we get back from smarty streets?
                 "enrichedApartmentNumber", InputData.builder().value(List.of("someApartmentNumber")).build(),
                 "sameMailingAddress", InputData.builder().value(List.of("true")).build()
         ));

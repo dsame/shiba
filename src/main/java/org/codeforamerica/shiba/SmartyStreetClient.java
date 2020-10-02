@@ -5,7 +5,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 public class SmartyStreetClient implements LocationClient {
@@ -73,7 +76,9 @@ public class SmartyStreetClient implements LocationClient {
                             components.getCityName(),
                             components.getStateAbbreviation(),
                             components.getZipcode() + "-" + components.getPlus4Code(),
-                            components.getSecondaryDesignator() + " " + components.getSecondaryNumber()
+                            Stream.of(components.getSecondaryDesignator(), components.getSecondaryNumber())
+                                    .filter(Objects::nonNull)
+                                    .collect(Collectors.joining(" "))
                     );
                 });
     }
