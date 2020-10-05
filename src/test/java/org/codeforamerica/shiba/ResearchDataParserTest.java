@@ -1,10 +1,12 @@
 package org.codeforamerica.shiba;
 
+import org.codeforamerica.shiba.application.FlowType;
 import org.codeforamerica.shiba.application.parsers.TotalIncomeParser;
 import org.codeforamerica.shiba.output.TotalIncome;
 import org.codeforamerica.shiba.output.TotalIncomeCalculator;
 import org.codeforamerica.shiba.pages.data.ApplicationData;
 import org.codeforamerica.shiba.pages.data.PagesData;
+import org.codeforamerica.shiba.pages.data.Subworkflows;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Date;
@@ -98,12 +100,12 @@ class ResearchDataParserTest {
     @Test
     void shouldParseResearchData_forPayMortgage() {
         ApplicationData applicationData = new ApplicationData();
-//        applicationData.setFlow(FlowType.FULL);
+        applicationData.setFlow(FlowType.FULL);
 
         PagesData pagesData = pagesDataBuilder.build(List.of(
-//                new PageDataBuilder("expeditedExpenses", Map.of(
-//                        "payRentOrMortgage", List.of("false")
-//                )),
+                new PageDataBuilder("expeditedExpenses", Map.of(
+                        "payRentOrMortgage", List.of("false")
+                )),
                 new PageDataBuilder("homeExpenses", Map.of(
                         "homeExpenses", List.of("MORTGAGE")
                 ))
@@ -122,12 +124,12 @@ class ResearchDataParserTest {
     @Test
     void shouldParseResearchData_forPayRent() {
         ApplicationData applicationData = new ApplicationData();
-//        applicationData.setFlow(FlowType.FULL);
+        applicationData.setFlow(FlowType.FULL);
 
         PagesData pagesData = pagesDataBuilder.build(List.of(
-//                new PageDataBuilder("expeditedExpenses", Map.of(
-//                        "payRentOrMortgage", List.of("false")
-//                )),
+                new PageDataBuilder("expeditedExpenses", Map.of(
+                        "payRentOrMortgage", List.of("false")
+                )),
                 new PageDataBuilder("homeExpenses", Map.of(
                         "homeExpenses", List.of("RENT")
                 ))
@@ -146,11 +148,14 @@ class ResearchDataParserTest {
     @Test
     void shouldParseResearchData_forPayRentOrMortgage() {
         ApplicationData applicationData = new ApplicationData();
-//        applicationData.setFlow(FlowType.FULL);
+        applicationData.setFlow(FlowType.EXPEDITED);
 
         PagesData pagesData = pagesDataBuilder.build(List.of(
                 new PageDataBuilder("expeditedExpenses", Map.of(
                         "payRentOrMortgage", List.of("true")
+                )),
+                new PageDataBuilder("homeExpenses", Map.of(
+                        "homeExpenses", List.of()
                 ))
         ));
         applicationData.setPagesData(pagesData);
@@ -163,4 +168,77 @@ class ResearchDataParserTest {
 
         assertThat(researchData).isEqualTo(expectedResearchData);
     }
+
+    @Test
+    void shouldParseResearchData_forSelfEmployed() {
+        ApplicationData applicationData = new ApplicationData();
+        Subworkflows subworkflows = applicationData.getSubworkflows();
+        subworkflows.addIteration("jobs", pagesDataBuilder.build(List.of(
+                new PageDataBuilder("selfEmployment", Map.of("selfEmployment", List.of("false")))
+        )));
+        subworkflows.addIteration("jobs", pagesDataBuilder.build(List.of(
+                new PageDataBuilder("selfEmployment", Map.of("selfEmployment", List.of("true")))
+        )));
+
+        ResearchData researchData = researchDataParser.parse(applicationData);
+
+        ResearchData expectedResearchData = ResearchData.builder()
+                .selfEmployment(true)
+                .build();
+
+        assertThat(researchData).isEqualTo(expectedResearchData);
+    }
+
+    @Test
+    void shouldParseResearchData_selfEmploymentWorkflowIsNull() {
+        ApplicationData applicationData = new ApplicationData();
+
+        ResearchData researchData = researchDataParser.parse(applicationData);
+
+        ResearchData expectedResearchData = ResearchData.builder()
+                .selfEmployment(null)
+                .build();
+
+        assertThat(researchData).isEqualTo(expectedResearchData);
+    }
+
+    @Test
+    void shouldParseResearchData_forUnearnedIncomeSources() {
+        ApplicationData applicationData = new ApplicationData();
+
+        PagesData  pagesData = pagesDataBuilder.build(List.of(
+                new PageDataBuilder("unearnedIncome", Map.of(
+                        "unearnedIncome", List.of("SOCIAL_SECURITY", "UNEMPLOYMENT")))
+        ));
+        applicationData.setPagesData(pagesData);
+
+        ResearchData researchData = researchDataParser.parse(applicationData);
+        ResearchData expectedResearchData = ResearchData.builder()
+                .socialSecurity(true)
+                .SSI(false)
+                .veteransBenefits(false)
+                .unemployment(true)
+                .workersCompensation(false)
+                .retirement(false)
+                .childOrSpousalSupport(false)
+                .tribalPayments(false)
+                .build();
+
+        assertThat(researchData).isEqualTo(expectedResearchData);
+    }
+
+    @Test
+    void shouldParseResearchData_forFlowType() {
+        ApplicationData applicationData = new ApplicationData();
+        applicationData.setFlow(FlowType.EXPEDITED);
+
+        ResearchData researchData = researchDataParser.parse(applicationData);
+
+        assertThat(researchData).isEqualTo(ResearchData.builder()
+                .flow(FlowType.EXPEDITED)
+                .build());
+    }
+
+//    @Test
+//    void should
 }

@@ -2,6 +2,7 @@ package org.codeforamerica.shiba;
 
 import lombok.Builder;
 import lombok.Value;
+import org.codeforamerica.shiba.application.FlowType;
 
 import java.sql.Date;
 
@@ -11,27 +12,34 @@ public class ResearchData {
     String spokenLanguage;
     String writtenLanguage;
     String sex;
+    Boolean snap;
+    Boolean cash;
+    Boolean housing;
+    Boolean emergency;
     String firstName;
     String lastName;
     Date dateOfBirth;
-    Boolean enteredSsn;
     String phoneNumber;
     String email;
     Boolean phoneOptIn;
     Boolean emailOptIn;
     String zipCode;
-    Boolean snap;
-    Boolean cash;
-    Boolean housing;
-    Boolean emergency;
     Boolean liveAlone;
     @Builder.Default
     Double moneyMadeLast30Days = 0.0;
+    Boolean payRentOrMortgage;
     Double homeExpensesAmount;
     Boolean areYouWorking;
-
-    Boolean payRentOrMortgage;
     Boolean selfEmployment;
-    Double unearnedIncome;
+    Boolean socialSecurity;
+    Boolean SSI;
+    Boolean veteransBenefits;
+    Boolean unemployment;
+    Boolean workersCompensation;
+    Boolean retirement;
+    Boolean childOrSpousalSupport;
+    Boolean tribalPayments;
     Integer householdSize;
+    Boolean enteredSsn;
+    FlowType flow;
 }

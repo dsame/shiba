@@ -1,5 +1,12 @@
 CREATE TABLE research
 (
+    application_id         VARCHAR,
+    completed_at           TIMESTAMP WITHOUT TIME ZONE,
+    county                 VARCHAR,
+    time_to_complete       INTEGER,
+    sentiment              VARCHAR,
+    feedback               TEXT,
+    flow                   VARCHAR,
     spoken_language        VARCHAR,
     written_language       VARCHAR,
     first_name             VARCHAR,
