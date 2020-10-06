@@ -63,7 +63,7 @@ class AddressEnrichmentTest {
 
         EnrichmentResult enrichmentResult = homeAddressValidationQuery.process(applicationData);
 
-        assertThat(enrichmentResult).containsOnly(Map.entry("enrichedCounty", new InputData(List.of("OLMSTED"))));
+        assertThat(enrichmentResult).containsOnly(Map.entry("enrichedCounty", new InputData(List.of("Olmsted"))));
     }
 
     @Test
