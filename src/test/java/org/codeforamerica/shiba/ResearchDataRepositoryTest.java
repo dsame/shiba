@@ -37,16 +37,16 @@ class ResearchDataRepositoryTest {
                 .emergency(false)
                 .firstName("someFirstName")
                 .lastName("someLastName")
-//                .dateOfBirth(LocalDate.now())
+                .dateOfBirth(LocalDate.now())
                 .phoneNumber("somePhoneNumber")
                 .email("someEmail")
                 .phoneOptIn(false)
                 .emailOptIn(true)
                 .zipCode("someZipCode")
                 .liveAlone(false)
-//                .moneyMadeLast30Days(123.31)
+                .moneyMadeLast30Days(123.31)
                 .payRentOrMortgage(false)
-//                .homeExpensesAmount(431.51)
+                .homeExpensesAmount(431.51)
                 .areYouWorking(true)
                 .selfEmployment(false)
                 .socialSecurity(true)
@@ -57,9 +57,9 @@ class ResearchDataRepositoryTest {
                 .retirement(false)
                 .childOrSpousalSupport(true)
                 .tribalPayments(false)
-//                .householdSize(123)
+                .householdSize(123)
                 .enteredSsn(true)
-//                .flow(FlowType.EXPEDITED)
+                .flow(FlowType.EXPEDITED)
                 .applicationId("someApplicationId")
                 .county("someCounty")
                 .build();
@@ -94,6 +94,11 @@ class ResearchDataRepositoryTest {
             assertThat(resultSet.getBoolean("child_or_spousal_support")).isEqualTo(researchData.getChildOrSpousalSupport());
             assertThat(resultSet.getBoolean("tribal_payments")).isEqualTo(researchData.getTribalPayments());
             assertThat(resultSet.getBoolean("entered_ssn")).isEqualTo(researchData.getEnteredSsn());
+            assertThat(resultSet.getDouble("money_made_last30_days")).isEqualTo(researchData.getMoneyMadeLast30Days());
+            assertThat(resultSet.getDouble("home_expenses_amount")).isEqualTo(researchData.getHomeExpensesAmount());
+            assertThat(resultSet.getDate("date_of_birth").toLocalDate()).isEqualTo(researchData.getDateOfBirth());
+            assertThat(resultSet.getInt("household_size")).isEqualTo(researchData.getHouseholdSize());
+            assertThat(resultSet.getString("flow")).isEqualTo(researchData.getFlow().name());
         });
     }
 }

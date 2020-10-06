@@ -45,7 +45,12 @@ public class ResearchDataRepository {
                 .addValue("retirement", researchData.getRetirement())
                 .addValue("child_or_spousal_support", researchData.getChildOrSpousalSupport())
                 .addValue("tribal_payments", researchData.getTribalPayments())
-                .addValue("entered_ssn", researchData.getEnteredSsn());
+                .addValue("entered_ssn", researchData.getEnteredSsn())
+                .addValue("date_of_birth", researchData.getDateOfBirth())
+                .addValue("money_made_last30_days", researchData.getMoneyMadeLast30Days())
+                .addValue("home_expenses_amount", researchData.getHomeExpensesAmount())
+                .addValue("household_size", researchData.getHouseholdSize())
+                .addValue("flow", researchData.getFlow());
         jdbcInsert.execute(sqlParameterSource);
     }
 
