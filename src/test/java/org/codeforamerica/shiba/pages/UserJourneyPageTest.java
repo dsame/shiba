@@ -178,7 +178,7 @@ public class UserJourneyPageTest extends AbstractBasePageTest {
         mailingAddressPage.enterInput("state", "IL");
         mailingAddressPage.enterInput("apartmentNumber", "someApartmentNumber");
         when(smartyStreetClient.validateAddress(any())).thenReturn(
-                Optional.of(new Address("smarty street", "City", "CA", "03104", ""))
+                Optional.of(new Address("smarty street", "City", "CA", "03104", "", null))
         );
         Page validationPage = mailingAddressPage.clickPrimaryButton();
 
