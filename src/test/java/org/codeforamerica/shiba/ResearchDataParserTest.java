@@ -9,7 +9,6 @@ import org.codeforamerica.shiba.pages.data.PagesData;
 import org.codeforamerica.shiba.pages.data.Subworkflows;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -240,5 +239,33 @@ class ResearchDataParserTest {
         assertThat(researchData).isEqualTo(ResearchData.builder()
                 .applicationId("someId")
                 .build());
+    }
+
+    @Test
+    void shouldParseResarchData_forHouseholdSize() {
+        ApplicationData applicationData = new ApplicationData();
+        Subworkflows subworkflows = applicationData.getSubworkflows();
+        subworkflows.addIteration("household", new PagesData());
+        subworkflows.addIteration("household", new PagesData());
+
+        ResearchData researchData = researchDataParser.parse(applicationData);
+
+        ResearchData expectedResearchData = ResearchData.builder()
+                .householdSize(2)
+                .build();
+
+        assertThat(researchData).isEqualTo(expectedResearchData);
+    }
+
+    @Test
+    void shouldParseResearchData_forHouseholdNotPresent() {
+        ApplicationData applicationData = new ApplicationData();
+
+        ResearchData researchData = researchDataParser.parse(applicationData);
+        ResearchData expectedResearchData = ResearchData.builder()
+                .householdSize(null)
+                .build();
+
+        assertThat(researchData).isEqualTo(expectedResearchData);
     }
 }

@@ -1,14 +1,18 @@
 package org.codeforamerica.shiba;
 
+import org.codeforamerica.shiba.application.FlowType;
 import org.codeforamerica.shiba.application.parsers.TotalIncomeParser;
 import org.codeforamerica.shiba.output.caf.TotalIncome;
 import org.codeforamerica.shiba.output.caf.TotalIncomeCalculator;
-import org.codeforamerica.shiba.pages.data.*;
-import org.jetbrains.annotations.NotNull;
+import org.codeforamerica.shiba.pages.data.ApplicationData;
+import org.codeforamerica.shiba.pages.data.PageData;
+import org.codeforamerica.shiba.pages.data.PagesData;
+import org.codeforamerica.shiba.pages.data.Subworkflow;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,11 +36,10 @@ public class ResearchDataParser {
         Optional<PageData> currentlyWorkingOptional = Optional.ofNullable(pagesData.getPage("employmentStatus"));
         Optional<PageData> liveAloneOptional = Optional.ofNullable(pagesData.getPage("doYouLiveAlone"));
         TotalIncome totalIncome = totalIncomeParser.parse(applicationData);
-        Optional<PageData> expeditedExpensesOptional = Optional.ofNullable(pagesData.getPage("expeditedExpenses"));
-        Optional<PageData> homeExpensesOptional = Optional.ofNullable(pagesData.getPage("homeExpenses"));
         Optional<PageData> programsOptional = Optional.ofNullable(pagesData.getPage("choosePrograms"));
         Optional<Subworkflow> jobsOptional = Optional.ofNullable(applicationData.getSubworkflows().get("jobs"));
         Optional<PageData> unearnedIncomeOptional = Optional.ofNullable(pagesData.getPage("unearnedIncome"));
+        Optional<Subworkflow> householdSizeOptional = Optional.ofNullable(applicationData.getSubworkflows().get("household"));
 
 
         return ResearchData.builder()
@@ -57,10 +60,10 @@ public class ResearchDataParser {
                 .zipCode(homeAddressOptional.map(homeAddr -> homeAddr.get("zipCode").getValue(0)).orElse(null))
                 .liveAlone(liveAloneOptional.map(liveAlone -> liveAlone.get("liveAlone").getValue(0).contains("true")).orElse(null))
                 .moneyMadeLast30Days(totalIncomeCalculator.calculate(totalIncome))
-                .payRentOrMortgage(getPayRentOrMortgage(homeExpensesOptional, expeditedExpensesOptional, applicationData))
+                .payRentOrMortgage(getPayRentOrMortgage(applicationData))
                 .homeExpensesAmount(homeExpensesAmountOptional.map(homeExpsAmount -> Double.valueOf(homeExpsAmount.get("homeExpensesAmount").getValue(0))).orElse(null))
                 .areYouWorking(currentlyWorkingOptional.map(currentlyWorking -> Boolean.valueOf(currentlyWorking.get("areYouWorking").getValue(0))).orElse(null))
-                .selfEmployment(getSelfEmployment(jobsOptional))
+                .selfEmployment(jobsOptional.map(this::getSelfEmployment).orElse(null))
                 .socialSecurity(unearnedIncomeOptional.map(i -> i.get("unearnedIncome").getValue().contains("SOCIAL_SECURITY")).orElse(null))
                 .SSI(unearnedIncomeOptional.map(i -> i.get("unearnedIncome").getValue().contains("SSI")).orElse(null))
                 .veteransBenefits(unearnedIncomeOptional.map(i -> i.get("unearnedIncome").getValue().contains("VETERANS_BENEFITS")).orElse(null))
@@ -73,28 +76,31 @@ public class ResearchDataParser {
                 .flow(applicationData.getFlow())
                 .applicationId(applicationData.getId())
                 .county(homeAddressOptional.map(homeAddress -> homeAddress.get("enrichedCounty").getValue().get(0)).orElse(null))
+                .householdSize(householdSizeOptional.map(ArrayList::size).orElse(null))
                 .build();
     }
 
-    private Boolean getPayRentOrMortgage(Optional<PageData> homeExpensesOptional, Optional<PageData> expeditedExpensesOptional, ApplicationData applicationData) {
-        if (applicationData.getFlow() == null) {
+    private Boolean getPayRentOrMortgage(ApplicationData applicationData) {
+        FlowType flow = applicationData.getFlow();
+        if (flow == null) {
             return null;
         }
-        return switch (applicationData.getFlow()) {
-            case EXPEDITED -> expeditedExpensesOptional.map(expeditedExpenses -> expeditedExpenses.get("payRentOrMortgage").getValue().contains("true")).orElse(null);
-            case FULL -> homeExpensesOptional
+        return switch (flow) {
+            case EXPEDITED -> Optional.ofNullable(applicationData.getPagesData().getPage("expeditedExpenses"))
+                    .map(expeditedExpenses -> expeditedExpenses.get("payRentOrMortgage").getValue().contains("true"))
+                    .orElse(null);
+            case FULL -> Optional.ofNullable(applicationData.getPagesData().getPage("homeExpenses"))
                     .map(homeExpenses -> {
                         List<String> housingExpenses = homeExpenses.get("homeExpenses").getValue();
                         return housingExpenses.contains("MORTGAGE") || housingExpenses.contains("RENT");
-                    }).orElse(null);
+                    })
+                    .orElse(null);
             case MINIMUM -> null;
         };
     }
 
-    private Boolean getSelfEmployment(Optional<Subworkflow> jobOptional) {
-        return jobOptional
-                .map(jobIterations -> jobIterations.stream()
-                        .anyMatch(job -> job.getPage("selfEmployment").get("selfEmployment").getValue().contains("true")))
-                .orElse(null);
+    private Boolean getSelfEmployment(Subworkflow jobsSubworkflow) {
+        return jobsSubworkflow.stream()
+                .anyMatch(job -> job.getPage("selfEmployment").get("selfEmployment").getValue().contains("true"));
     }
 }
