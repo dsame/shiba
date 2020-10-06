@@ -2,14 +2,15 @@ package org.codeforamerica.shiba;
 
 import org.codeforamerica.shiba.application.FlowType;
 import org.codeforamerica.shiba.application.parsers.TotalIncomeParser;
-import org.codeforamerica.shiba.output.TotalIncome;
-import org.codeforamerica.shiba.output.TotalIncomeCalculator;
+import org.codeforamerica.shiba.output.caf.TotalIncome;
+import org.codeforamerica.shiba.output.caf.TotalIncomeCalculator;
 import org.codeforamerica.shiba.pages.data.ApplicationData;
 import org.codeforamerica.shiba.pages.data.PagesData;
 import org.codeforamerica.shiba.pages.data.Subworkflows;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +27,7 @@ class ResearchDataParserTest {
     ResearchDataParser researchDataParser = new ResearchDataParser(
             totalIncomeCalculator, totalIncomeParser
     );
-    private PagesDataBuilder pagesDataBuilder = new PagesDataBuilder();
+    private final PagesDataBuilder pagesDataBuilder = new PagesDataBuilder();
 
     @Test
     void shouldParseResearchData() {
@@ -41,7 +42,7 @@ class ResearchDataParserTest {
                         "sex", List.of("female"),
                         "firstName", List.of("Person"),
                         "lastName", List.of("Fake"),
-                        "dateOfBirth", List.of("2020-10-04"),
+                        "dateOfBirth", List.of("10", "04", "2020"),
                         "ssn", List.of("123")
                 )),
                 new PageDataBuilder("contactInfo", Map.of(
@@ -50,7 +51,8 @@ class ResearchDataParserTest {
                         "phoneOrEmail", List.of("TEXT")
                 )),
                 new PageDataBuilder("homeAddress", Map.of(
-                        "zipCode", List.of("1111-1111")
+                        "zipCode", List.of("1111-1111"),
+                        "enrichedCounty", List.of("someCounty")
                 )),
                 new PageDataBuilder("choosePrograms", Map.of(
                         "programs", List.of("SNAP", "GRH", "EA")
@@ -78,7 +80,7 @@ class ResearchDataParserTest {
                 .sex("female")
                 .firstName("Person")
                 .lastName("Fake")
-                .dateOfBirth(Date.valueOf("2020-10-04"))
+                .dateOfBirth(LocalDate.of(2020, 10, 4))
                 .enteredSsn(true)
                 .phoneNumber("6038791111")
                 .email("fake@email.com")
@@ -93,6 +95,7 @@ class ResearchDataParserTest {
                 .moneyMadeLast30Days(123.0)
                 .homeExpensesAmount(111.1)
                 .areYouWorking(true)
+                .county("someCounty")
                 .build();
         assertThat(researchData).isEqualTo(expectedResearchData);
     }
@@ -114,11 +117,7 @@ class ResearchDataParserTest {
 
         ResearchData researchData = researchDataParser.parse(applicationData);
 
-        ResearchData expectedResearchData = ResearchData.builder()
-                .payRentOrMortgage(true)
-                .build();
-
-        assertThat(researchData).isEqualTo(expectedResearchData);
+        assertThat(researchData.getPayRentOrMortgage()).isTrue();
     }
 
     @Test
@@ -138,11 +137,7 @@ class ResearchDataParserTest {
 
         ResearchData researchData = researchDataParser.parse(applicationData);
 
-        ResearchData expectedResearchData = ResearchData.builder()
-                .payRentOrMortgage(true)
-                .build();
-
-        assertThat(researchData).isEqualTo(expectedResearchData);
+        assertThat(researchData.getPayRentOrMortgage()).isTrue();
     }
 
     @Test
@@ -162,11 +157,7 @@ class ResearchDataParserTest {
 
         ResearchData researchData = researchDataParser.parse(applicationData);
 
-        ResearchData expectedResearchData = ResearchData.builder()
-                .payRentOrMortgage(true)
-                .build();
-
-        assertThat(researchData).isEqualTo(expectedResearchData);
+        assertThat(researchData.getPayRentOrMortgage()).isTrue();
     }
 
     @Test
@@ -206,7 +197,7 @@ class ResearchDataParserTest {
     void shouldParseResearchData_forUnearnedIncomeSources() {
         ApplicationData applicationData = new ApplicationData();
 
-        PagesData  pagesData = pagesDataBuilder.build(List.of(
+        PagesData pagesData = pagesDataBuilder.build(List.of(
                 new PageDataBuilder("unearnedIncome", Map.of(
                         "unearnedIncome", List.of("SOCIAL_SECURITY", "UNEMPLOYMENT")))
         ));
@@ -239,6 +230,15 @@ class ResearchDataParserTest {
                 .build());
     }
 
-//    @Test
-//    void should
+    @Test
+    void shouldParseResearchData_forApplicationId() {
+        ApplicationData applicationData = new ApplicationData();
+        applicationData.setId("someId");
+
+        ResearchData researchData = researchDataParser.parse(applicationData);
+
+        assertThat(researchData).isEqualTo(ResearchData.builder()
+                .applicationId("someId")
+                .build());
+    }
 }

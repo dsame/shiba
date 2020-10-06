@@ -14,24 +14,18 @@ import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.codeforamerica.shiba.County.OTHER;
+import static org.codeforamerica.shiba.County.Other;
 
 @Component
 public class ApplicationFactory {
     private final Clock clock;
-    private final Map<String, County> countyZipCode;
-    private final LocationClient locationClient;
-    private final ApplicationDataParser<Address> homeAddressParser;
+    private final ApplicationDataParser<County> countyParser;
 
     public ApplicationFactory(
             Clock clock,
-            Map<String, County> countyZipCode,
-            LocationClient locationClient,
-            ApplicationDataParser<Address> homeAddressParser) {
+            ApplicationDataParser<County> countyParser) {
         this.clock = clock;
-        this.countyZipCode = countyZipCode;
-        this.locationClient = locationClient;
-        this.homeAddressParser = homeAddressParser;
+        this.countyParser = countyParser;
     }
 
     public Application newApplication(String id, ApplicationData applicationData, Metrics metrics) {
@@ -40,17 +34,13 @@ public class ApplicationFactory {
         copy.setSubworkflows(applicationData.getSubworkflows());
         copy.setIncompleteIterations(applicationData.getIncompleteIterations());
         copy.setFlow(applicationData.getFlow());
-        Address homeAddress = homeAddressParser.parse(applicationData);
-        Optional<String> countyString = locationClient.getCounty(homeAddress);
-        County county = countyString.map(County::fromString)
-                .orElse(countyZipCode.getOrDefault(homeAddress.getZipcode(), OTHER));
         ZonedDateTime completedAt = ZonedDateTime.now(clock);
 
         return Application.builder()
                 .id(id)
                 .completedAt(completedAt)
                 .applicationData(copy)
-                .county(county)
+                .county(countyParser.parse(applicationData))
                 .timeToComplete(Duration.between(metrics.getStartTime(), completedAt))
                 .flow(applicationData.getFlow())
                 .build();

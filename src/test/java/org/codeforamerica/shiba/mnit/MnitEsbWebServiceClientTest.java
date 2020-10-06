@@ -106,7 +106,7 @@ class MnitEsbWebServiceClientTest {
 
         mnitEsbWebServiceClient.send(
                 new ApplicationFile(fileContent.getBytes(), fileName),
-                County.OLMSTED
+                County.Olmsted
         );
 
         mockWebServiceServer.verify();
@@ -146,7 +146,7 @@ class MnitEsbWebServiceClientTest {
 
         mnitEsbWebServiceClient.send(new ApplicationFile(
                 "whatever".getBytes(),
-                "someFileName"), County.HENNEPIN);
+                "someFileName"), County.Hennepin);
 
         mockWebServiceServer.verify();
     }

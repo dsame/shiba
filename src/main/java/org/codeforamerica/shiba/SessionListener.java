@@ -21,7 +21,9 @@ public class SessionListener implements HttpSessionListener {
     @Override
     public void sessionDestroyed(HttpSessionEvent sessionEvent) {
         ApplicationData applicationData = ((ApplicationData) sessionEvent.getSession().getAttribute("scopedTarget.applicationData"));
-        researchDataRepository.save(researchDataParser.parse(applicationData));
+        if (!applicationData.getPagesData().isEmpty()) {
+            researchDataRepository.save(researchDataParser.parse(applicationData));
+        }
     }
 
 }

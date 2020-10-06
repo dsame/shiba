@@ -1,20 +1,16 @@
 package org.codeforamerica.shiba;
 
-import org.codeforamerica.shiba.application.FlowType;
 import org.codeforamerica.shiba.application.parsers.TotalIncomeParser;
-import org.codeforamerica.shiba.output.TotalIncome;
-import org.codeforamerica.shiba.output.TotalIncomeCalculator;
-import org.codeforamerica.shiba.pages.data.ApplicationData;
-import org.codeforamerica.shiba.pages.data.PageData;
-import org.codeforamerica.shiba.pages.data.PagesData;
-import org.codeforamerica.shiba.pages.data.Subworkflow;
+import org.codeforamerica.shiba.output.caf.TotalIncome;
+import org.codeforamerica.shiba.output.caf.TotalIncomeCalculator;
+import org.codeforamerica.shiba.pages.data.*;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
-import java.sql.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
-
-import static org.codeforamerica.shiba.application.FlowType.EXPEDITED;
 
 @Component
 public class ResearchDataParser {
@@ -53,7 +49,7 @@ public class ResearchDataParser {
                 .emergency(programsOptional.map(c -> c.get("programs").getValue().contains("EA")).orElse(null))
                 .firstName(personalInfoOptional.map(pInfo -> pInfo.get("firstName").getValue(0)).orElse(null))
                 .lastName(personalInfoOptional.map(pInfo -> pInfo.get("lastName").getValue(0)).orElse(null))
-                .dateOfBirth(personalInfoOptional.map(pInfo -> Date.valueOf(pInfo.get("dateOfBirth").getValue(0))).orElse(null))
+                .dateOfBirth(personalInfoOptional.map(pInfo -> LocalDate.parse(String.join("-", pInfo.get("dateOfBirth").getValue()), DateTimeFormatter.ofPattern("MM-dd-yyyy"))).orElse(null))
                 .phoneNumber(contactInfoOptional.map(contactInformation -> contactInformation.get("phoneNumber").getValue(0)).orElse(null))
                 .email(contactInfoOptional.map(contactInformation -> contactInformation.get("email").getValue(0)).orElse(null))
                 .phoneOptIn(contactInfoOptional.map(contactInformation -> contactInformation.get("phoneOrEmail").getValue().contains("TEXT")).orElse(null))
@@ -63,7 +59,7 @@ public class ResearchDataParser {
                 .moneyMadeLast30Days(totalIncomeCalculator.calculate(totalIncome))
                 .payRentOrMortgage(getPayRentOrMortgage(homeExpensesOptional, expeditedExpensesOptional, applicationData))
                 .homeExpensesAmount(homeExpensesAmountOptional.map(homeExpsAmount -> Double.valueOf(homeExpsAmount.get("homeExpensesAmount").getValue(0))).orElse(null))
-                .areYouWorking(currentlyWorkingOptional.map(currentlyWrking -> Boolean.valueOf(currentlyWrking.get("areYouWorking").getValue(0))).orElse(null))
+                .areYouWorking(currentlyWorkingOptional.map(currentlyWorking -> Boolean.valueOf(currentlyWorking.get("areYouWorking").getValue(0))).orElse(null))
                 .selfEmployment(getSelfEmployment(jobsOptional))
                 .socialSecurity(unearnedIncomeOptional.map(i -> i.get("unearnedIncome").getValue().contains("SOCIAL_SECURITY")).orElse(null))
                 .SSI(unearnedIncomeOptional.map(i -> i.get("unearnedIncome").getValue().contains("SSI")).orElse(null))
@@ -75,21 +71,24 @@ public class ResearchDataParser {
                 .tribalPayments(unearnedIncomeOptional.map(i -> i.get("unearnedIncome").getValue().contains("TRIBAL_PAYMENTS")).orElse(null))
                 .enteredSsn(personalInfoOptional.map(pInfo -> !(String.join("", pInfo.get("ssn").getValue())).isBlank()).orElse(null))
                 .flow(applicationData.getFlow())
+                .applicationId(applicationData.getId())
+                .county(homeAddressOptional.map(homeAddress -> homeAddress.get("enrichedCounty").getValue().get(0)).orElse(null))
                 .build();
     }
 
     private Boolean getPayRentOrMortgage(Optional<PageData> homeExpensesOptional, Optional<PageData> expeditedExpensesOptional, ApplicationData applicationData) {
-        FlowType flowType = applicationData.getFlow();
-
-        if (flowType == EXPEDITED) {
-            return expeditedExpensesOptional.map(expeditedExpenses -> expeditedExpenses.get("payRentOrMortgage").getValue().contains("true")).orElse(null);
-        } else {
-            return homeExpensesOptional
+        if (applicationData.getFlow() == null) {
+            return null;
+        }
+        return switch (applicationData.getFlow()) {
+            case EXPEDITED -> expeditedExpensesOptional.map(expeditedExpenses -> expeditedExpenses.get("payRentOrMortgage").getValue().contains("true")).orElse(null);
+            case FULL -> homeExpensesOptional
                     .map(homeExpenses -> {
                         List<String> housingExpenses = homeExpenses.get("homeExpenses").getValue();
                         return housingExpenses.contains("MORTGAGE") || housingExpenses.contains("RENT");
                     }).orElse(null);
-        }
+            case MINIMUM -> null;
+        };
     }
 
     private Boolean getSelfEmployment(Optional<Subworkflow> jobOptional) {

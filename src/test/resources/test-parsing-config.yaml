@@ -55,6 +55,10 @@ test-parsing:
       apartmentNumber:
         pageName: homeAddressPageName
         inputName: addressLine5
+      county:
+        pageName: homeAddressPageName
+        inputName: addressLine6
+        defaultValue: Hennepin
   mailingAddress:
     pageInputs:
       street:
@@ -78,3 +82,7 @@ test-parsing:
         pageName: contactInfoPageName
         inputName: contactEmail
   researchData:
+    pageInputs:
+      thing:
+        pageName:
+        inputName:

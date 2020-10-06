@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Value;
 import org.codeforamerica.shiba.application.FlowType;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 @Value
 @Builder
@@ -18,7 +18,7 @@ public class ResearchData {
     Boolean emergency;
     String firstName;
     String lastName;
-    Date dateOfBirth;
+    LocalDate dateOfBirth;
     String phoneNumber;
     String email;
     Boolean phoneOptIn;
@@ -42,4 +42,6 @@ public class ResearchData {
     Integer householdSize;
     Boolean enteredSsn;
     FlowType flow;
+    String applicationId;
+    String county;
 }

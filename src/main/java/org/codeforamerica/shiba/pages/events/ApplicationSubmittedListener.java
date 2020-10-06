@@ -104,7 +104,7 @@ public class ApplicationSubmittedListener {
 
         Application application = applicationRepository.find(event.getApplicationId());
 
-        if (application.getCounty() == County.OTHER) {
+        if (application.getCounty() == County.Other) {
             emailClient.sendNonPartnerCountyAlert(application.getId(), application.getCompletedAt());
         }
     }
