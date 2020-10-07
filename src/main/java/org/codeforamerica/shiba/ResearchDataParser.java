@@ -75,7 +75,10 @@ public class ResearchDataParser {
                 .enteredSsn(personalInfoOptional.map(pInfo -> !(String.join("", pInfo.get("ssn").getValue())).isBlank()).orElse(null))
                 .flow(applicationData.getFlow())
                 .applicationId(applicationData.getId())
-                .county(homeAddressOptional.map(homeAddress -> homeAddress.get("enrichedCounty").getValue().get(0)).orElse(null))
+                .county(homeAddressOptional
+                        .flatMap(homeAddress -> Optional.ofNullable(homeAddress.get("enrichedCounty")))
+                        .map(inputData -> inputData.getValue().get(0))
+                        .orElse(null))
                 .householdSize(householdSizeOptional.map(ArrayList::size).orElse(null))
                 .build();
     }

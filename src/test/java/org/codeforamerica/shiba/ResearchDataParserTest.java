@@ -100,6 +100,22 @@ class ResearchDataParserTest {
     }
 
     @Test
+    void shouldParseResearchData_whenCountyInfoIsNotPresent() {
+        ApplicationData applicationData = new ApplicationData();
+        PagesData pagesData = pagesDataBuilder.build(List.of(
+                new PageDataBuilder("homeAddress", Map.of(
+                        "zipCode", List.of("1111-1111")
+                ))
+        ));
+        applicationData.setPagesData(pagesData);
+
+        ResearchData researchData = researchDataParser.parse(applicationData);
+
+        assertThat(researchData.getCounty()).isNull();
+
+    }
+
+    @Test
     void shouldParseResearchData_forPayMortgage() {
         ApplicationData applicationData = new ApplicationData();
         applicationData.setFlow(FlowType.FULL);
