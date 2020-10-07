@@ -9,10 +9,8 @@ import org.springframework.mock.web.MockHttpSession;
 
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
-
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 class SessionListenerTest {
@@ -42,6 +40,15 @@ class SessionListenerTest {
 
     @Test
     void shouldNotSaveResearchDataWhenPagesDataIsEmpty() {
+        sessionListener.sessionDestroyed(mockSessionEvent);
+
+        verifyNoInteractions(researchDataRepository);
+    }
+
+    @Test
+    void shouldNotSaveResearchDataWhenApplicationDataHasNotBeenInitialized() {
+        HttpSession session = new MockHttpSession();
+        when(mockSessionEvent.getSession()).thenReturn(session);
         sessionListener.sessionDestroyed(mockSessionEvent);
 
         verifyNoInteractions(researchDataRepository);
