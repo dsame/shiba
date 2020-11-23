@@ -79,7 +79,7 @@ public class PageController {
         return "privacyPolicy";
     }
 
-    @PostMapping(value = "/locales/", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @PostMapping(value = "/locale", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     Void setLocaleForApplication(HttpServletRequest request, @RequestBody MultiValueMap<String, String> formData){
         LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request);
         Locale locale = new Locale(formData.getFirst("locales"));
