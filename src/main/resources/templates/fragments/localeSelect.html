@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div style="float: right" class="select">
+    <form method="post" th:action="'/locale'" id="localeSelector">
+        <select class="select__element"  name="locales" id="locales"><option value="en" th:text="#{language-preferences.english}"></option>
+            <option value="es" th:text="#{language-preferences.spanish}"></option></select>
+    </form>
+</div>
+</body>
+</html>

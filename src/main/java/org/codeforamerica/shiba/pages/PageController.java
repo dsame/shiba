@@ -15,13 +15,17 @@ import org.codeforamerica.shiba.pages.events.PageEventPublisher;
 import org.codeforamerica.shiba.pages.events.SubworkflowCompletedEvent;
 import org.codeforamerica.shiba.pages.events.SubworkflowIterationDeletedEvent;
 import org.springframework.context.MessageSource;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.support.RequestContextUtils;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.time.Clock;
@@ -43,6 +47,8 @@ public class PageController {
     private final MessageSource messageSource;
     private final PageEventPublisher pageEventPublisher;
     private final ApplicationEnrichment applicationEnrichment;
+
+
 
     public PageController(
             ApplicationConfiguration applicationConfiguration,
@@ -71,6 +77,15 @@ public class PageController {
     @GetMapping("/privacy")
     String getPrivacyPolicy() {
         return "privacyPolicy";
+    }
+
+    @PostMapping(value = "/locales/", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    Void setLocaleForApplication(HttpServletRequest request, @RequestBody MultiValueMap<String, String> formData){
+        LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request);
+        Locale locale = new Locale(formData.getFirst("locales"));
+        localeResolver.setLocale(request, null, locale);
+
+        return null;
     }
 
     @GetMapping("/pages/{pageName}/navigation")

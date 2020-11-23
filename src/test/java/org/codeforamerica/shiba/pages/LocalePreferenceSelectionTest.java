@@ -9,7 +9,7 @@ import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class LanguagePreferenceSelectionTest extends AbstractBasePageTest {
+public class LocalePreferenceSelectionTest extends AbstractBasePageTest {
 
     @Override
     @BeforeEach
