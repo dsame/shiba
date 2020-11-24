@@ -1,13 +1,24 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <body>
-<div style="float: right" class="select">
-    <form method="post" th:action="'/locale'" id="localeSelector">
-        <select class="select__element"  name="locales" id="locales">
-            <option value="en" th:text="#{language-preferences.english}"></option>
-            <option value="es" th:text="#{language-preferences.spanish}"></option>
-        </select>
-    </form>
+<div style="float: right" class="select" th:with="lang=${#locale}">
+    <select class="select__element"  name="locales" id="locales">
+        <option value=""   th:text="#{language-preferences.language-preferences}"></option>
+        <option value=""   th:text="${lang.equals('en')}"></option>
+        <option value=""   th:text="${lang}"></option>
+        <option value="en" th:selected="${lang == 'en'}" th:text="#{language-preferences.english}"></option>
+        <option value="es" th:selected="${lang == 'es'}" th:text="#{language-preferences.spanish}"></option>
+    </select>
+    <script>
+        $(document).ready(function() {
+            $("#locales").change(function () {
+                var selectedOption = $('#locales').val();
+                if (selectedOption != ''){
+                    window.location.replace('?lang=' + selectedOption);
+                }
+            });
+        });
+    </script>
 </div>
 </body>
 </html>

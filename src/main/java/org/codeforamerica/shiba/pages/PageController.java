@@ -79,15 +79,6 @@ public class PageController {
         return "privacyPolicy";
     }
 
-    @PostMapping(value = "/locale", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    RedirectView setLocaleForApplication(HttpServletRequest request, @RequestBody MultiValueMap<String, String> formData, HttpServletResponse response) {
-        LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request);
-        Locale locale = new Locale(formData.getFirst("locales"));
-        localeResolver.setLocale(request, null, locale);
-        System.out.println("THE LOCALE IS " + localeResolver.resolveLocale(request));
-        return new RedirectView(request.getHeader("Referer"));
-    }
-
     @GetMapping("/pages/{pageName}/navigation")
     RedirectView navigation(
             @PathVariable String pageName,
