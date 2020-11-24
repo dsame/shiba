@@ -80,12 +80,12 @@ public class PageController {
     }
 
     @PostMapping(value = "/locale", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    Void setLocaleForApplication(HttpServletRequest request, @RequestBody MultiValueMap<String, String> formData){
+    RedirectView setLocaleForApplication(HttpServletRequest request, @RequestBody MultiValueMap<String, String> formData, HttpServletResponse response) {
         LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request);
         Locale locale = new Locale(formData.getFirst("locales"));
         localeResolver.setLocale(request, null, locale);
-
-        return null;
+        System.out.println("THE LOCALE IS " + localeResolver.resolveLocale(request));
+        return new RedirectView(request.getHeader("Referer"));
     }
 
     @GetMapping("/pages/{pageName}/navigation")
