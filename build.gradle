@@ -91,7 +91,7 @@ dependencies {
     implementation 'com.sun.activation:jakarta.activation:1.2.2'
 
     implementation(files(genJaxb.classesDir).builtBy(genJaxb))
-    jaxb "com.sun.xml.bind:jaxb-xjc:2.3.3"
+    jaxb "com.sun.xml.bind:jaxb-xjc:3.0.0"
 
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
