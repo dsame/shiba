@@ -10,6 +10,8 @@ import org.springframework.core.io.Resource;
 import java.util.List;
 import java.util.Map;
 
+import static org.codeforamerica.shiba.output.DocumentType.CAF;
+import static org.codeforamerica.shiba.output.DocumentType.CCAP;
 import static org.codeforamerica.shiba.output.Recipient.CASEWORKER;
 import static org.codeforamerica.shiba.output.Recipient.CLIENT;
 
@@ -38,20 +40,9 @@ public class PdfFieldFillersConfiguration {
     }
 
     @Bean
-    public PdfFieldFiller caseworkerCcapFiller(
+    public PdfFieldFiller ccapFiller(
             @Value("classpath:cover-pages.pdf") Resource coverPages,
-            @Value("classpath:ccap-cover.pdf") Resource ccapCover,
-            @Value("classpath:LiberationSans-Regular.ttf") Resource font
-    ) {
-        return new PDFBoxFieldFiller(List.of(
-                coverPages, ccapCover
-        ), font);
-    }
-
-    @Bean
-    public PdfFieldFiller clientCcapFiller(
-            @Value("classpath:cover-pages.pdf") Resource coverPages,
-            @Value("classpath:ccap-cover.pdf") Resource ccapCover,
+            @Value("classpath:ccap-body.pdf") Resource ccapCover,
             @Value("classpath:LiberationSans-Regular.ttf") Resource font
     ) {
         return new PDFBoxFieldFiller(List.of(
@@ -63,16 +54,15 @@ public class PdfFieldFillersConfiguration {
     public Map<Recipient, Map<DocumentType, PdfFieldFiller>> pdfFieldFillers(
             PdfFieldFiller caseworkerCafFiller,
             PdfFieldFiller clientCafFiller,
-            PdfFieldFiller caseworkerCcapFiller,
-            PdfFieldFiller clientCcapFiller
+            PdfFieldFiller ccapFiller
     ) {
         return Map.of(
                 CASEWORKER, Map.of(
-                        DocumentType.CAF, caseworkerCafFiller,
-                        DocumentType.CCAP, caseworkerCcapFiller),
+                        CAF, caseworkerCafFiller,
+                        CCAP, ccapFiller),
                 CLIENT, Map.of(
-                        DocumentType.CAF, clientCafFiller,
-                        DocumentType.CCAP, clientCcapFiller)
+                        CAF, clientCafFiller,
+                        CCAP, ccapFiller)
         );
     }
 }
