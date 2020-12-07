@@ -7,6 +7,7 @@ mappings:
     firstName: APPLICANT_FIRST_NAME
     lastName: APPLICANT_LAST_NAME
     maritalStatus: MARITAL_STATUS
+    married: IS_MARRIED
     otherName: APPLICANT_OTHER_NAME
     dateOfBirth: DATE_OF_BIRTH
     ssn: APPLICANT_SSN
